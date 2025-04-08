@@ -1,3 +1,5 @@
 node_modules/
 .env
 build/
+path_to_pr.txt
+/server/uploads/

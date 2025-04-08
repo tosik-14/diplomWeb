@@ -1,5 +1,0 @@
-cd Desktop/4course/diplom/pr
-
-
-client npm start
-server npm run dev

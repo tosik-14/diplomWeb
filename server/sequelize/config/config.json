@@ -1,0 +1,27 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "123",
+    "database": "exam_tickets_creator_db",
+    "host": "postgres",
+    "dialect": "postgres",
+    "modelsPath": "./sequelize/models",
+    "logging": false
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "postgres",
+    "dialect": "postgres",
+    "modelsPath": "./sequelize/models"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "postgres",
+    "dialect": "postgres",
+    "modelsPath": "./sequelize/models"
+  }
+}
