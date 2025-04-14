@@ -1,0 +1,137 @@
+.profile-view__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.profile-view {
+    background: #fff;
+    border-radius: 23px;
+    width: 725px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 0 20px 20px 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+
+.profile-view__header {
+    height: 75px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    cursor: default;
+}
+
+.profile-view__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.profile-view__close img{
+    width: 25px;
+    height: 25px;
+}
+
+
+
+.profile-view__body {
+    margin: 0 50px 20px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+
+}
+
+.profile-view-main-info {
+    display: flex;
+    flex-direction: row;
+    gap: 60px;
+    width: 100%;
+}
+
+.profile-view__avatar {
+    width: 178px;
+    height: 178px;
+    object-fit: cover;
+    border-radius: 12%;
+}
+
+.profile-view__right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-view__row {
+    display: flex;
+    align-items: center;
+}
+
+.profile-view__label {
+    font-weight: 500;
+    width: 220px; /* ширина для выравнивания */
+    color: #828282;
+}
+
+.profile-view__value {
+    flex: 1;
+    color: #000000;
+}
+
+.profile-view__name {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.profile-view__bio {
+    line-height: 1.5;
+    margin-top: 8px;
+    color: #555;
+}
+
+.profile-view__buttons {
+    display: flex;
+    justify-content: end;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.profile-view__btn {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Montserrat', sans-serif;
+    padding: 8px 12px;
+    cursor: pointer;
+    width: 144px;
+    height: 54px;
+    border-radius: 16px;
+}
+
+.profile-view__btn img {
+    width: 25px;
+    height: 25px;
+}
+
+.admin-btn {
+
+}
+
+.edit-btn {
+    width: 170px;
+}
+
+.logout-btn {
+    width: 110px;
+}

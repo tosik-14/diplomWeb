@@ -1,0 +1,194 @@
+.admin-container {
+    /*height: 100vh;*/
+    min-height: 100vh;
+    overflow-x: auto;
+    background-color: white;
+}
+
+.admin-panel {
+    padding: 20px;
+    width: 1140px;
+    margin: 0 auto;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.admin-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.admin-panel__title {
+    font-weight: 400;
+    cursor: default;
+}
+
+.admin-panel__title span {
+    font-weight: 700;
+}
+
+.admin-panel__back {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    height: 54px;
+    width: 237px;
+    border-radius: 17px;
+    cursor: pointer;
+}
+
+
+
+
+
+.admin-panel__controls {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.admin-panel__btn {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    color: #000000;
+    background-color: #D9D9D9;
+    border: 1px solid #A6A6A6;
+    border-radius: 0;
+    width: 150px;
+    height: 50px;
+    cursor: pointer;
+}
+
+
+
+
+
+.admin-panel__table {
+    border: 1px solid #9E9E9E;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.admin-panel__row {
+    display: grid;
+    /*grid-template-columns: 40px 160px 80px 180px 180px 180px 120px;*/
+    grid-template-columns: /*это конечно сильно, но скорее задел на будущее*/
+        40px                                   /* чекбокс */
+        minmax(160px, 1.5fr)                   /* фио */
+        70px/*minmax(80px, 0.5fr)                    !* админ *!*/
+        minmax(150px, 1fr)                     /* университет */
+        minmax(150px, 1fr)                     /* факультет */
+        minmax(150px, 1fr)                     /* должность */
+        minmax(100px, 0.7fr);                  /* город */
+    border-bottom: 1px solid #9E9E9E;
+    height: 43px;
+    /*height: 300px;*/ /*TEST*/
+    align-items: center;
+}
+
+.admin-panel__row--header {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.admin-panel__cell {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    border-right: 1px solid #9E9E9E;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.admin-panel__cell:first-child {
+    padding: 0;
+}
+
+.admin-panel__cell:last-child {
+    border-right: none;
+}
+
+.admin-panel__row--header div {
+    display: flex;
+    padding: 0;
+    justify-content: center;
+}
+
+.admin-panel__cell-isAdmin{
+    justify-content: center;
+    padding: 0;
+}
+
+.admin-panel__row:last-child {
+    border-bottom: none;
+}
+
+.admin-panel__checkbox-cell {
+    display: flex;
+    justify-content: center;
+}
+
+.admin-panel__checkbox-cell input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+
+
+.admin-panel__row-expanded {
+    background-color: #f9f9f9;
+    padding: 0px 0px;
+    box-sizing: border-box;
+    position: relative;
+    border-bottom: 1px solid #9E9E9E;
+}
+
+.admin-panel__expanded-wrapper {
+    position: relative;
+    padding: 0 43px;
+    /*height: 500px;*/ /*TEST*/
+}
+
+.admin-panel__close-expanded-content {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.admin-panel__close-expanded-content img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.admin-panel__close-expanded-content img:hover {
+    opacity: 1;
+}
+
+.admin-panel__expanded-content {
+    display: flex;
+    gap: 40px;
+
+    color: #333;
+    line-height: 0; /* уменьшенный отступ между строками */
+    padding-top: 0px;
+}
+
+.admin-panel__expanded-col {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+

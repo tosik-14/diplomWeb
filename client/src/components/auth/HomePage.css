@@ -1,0 +1,150 @@
+.homepage__logo {
+    position: absolute;
+    top: 0px; /* или сколько нужно */
+    left: 20px;
+    width: 150px;
+    object-fit: contain;
+    z-index: 1000; /* чтобы быть поверх всего */
+}
+
+.homepage__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+
+.homepage-welcome {
+    width: 100%;
+    background-color: #F5F5F5;
+    border-radius: 30px;
+    display: flex;
+    justify-content: space-between;
+    padding: 60px 40px;
+    box-sizing: border-box;
+}
+
+.homepage__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /*gap: 33px;*/
+    max-width: 306px;
+    flex: 1;
+}
+
+.homepage__text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 33px;
+    max-width: 320px; /* или 100%, если адаптивность важна */
+}
+
+.homepage__title {
+    line-height: 1.2;
+    word-break: break-word;
+    font-weight: 1000;
+    margin: 0;
+}
+
+.homepage__description {
+    line-height: 1.5;
+    word-break: break-word;
+    margin: 0;
+}
+
+.homepage__button {
+    width: 306px;
+    height: 54px;
+    border-radius: 17px;
+    cursor: pointer;
+}
+
+.homepage__auth {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.homepage__auth a {
+    color: black;
+}
+
+/*|||||||||||||||||||||||||ПРАВАЯ ЧАСТЬ СТУПЕНЬКИ||||||||||||||||||||||||||*/
+.homepage__aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 120px;
+    width: 100%;
+}
+
+.homepage__steps {
+    display: flex;
+    flex-direction: column;
+    /*align-items: flex-end;*/
+}
+
+.step {
+    width: 425px;
+    height: 149px;
+    display: flex;
+    align-items: center;
+    padding: 10px 2px 10px 20px;
+    box-sizing: border-box;
+}
+
+.step__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.step__text {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.step__small-text {
+    margin: 0;
+}
+
+.step__big-text {
+    margin: 5px 0 0;
+    font-weight: 1000;
+}
+
+.step__icon {
+    width: 118px;
+    height: 118px;
+}
+
+.step--left {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: #E9E97D;
+    align-self: flex-start;
+}
+
+.step--center {
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: #C3FF87;
+    align-self: center;
+}
+
+.step--right {
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-color: #E69AFF;
+    align-self: flex-end;
+    padding-right: 10px;
+}
+
+
+
+

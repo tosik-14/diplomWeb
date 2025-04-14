@@ -1,0 +1,187 @@
+.setup-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.setup-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    padding: 40px;
+    box-sizing: border-box;
+    width: 1080px;
+    /*height: 510px;*/
+    background-color: #F5F5F5;
+    border-radius: 30px;
+    margin: 0 auto;
+}
+
+.setup-content {
+    display: flex;
+    gap: 100px;
+    align-items: stretch; /* растягиваем по высоте самого высокого, то есть по высоте left-side в моем случае*/
+}
+
+
+.left-side { /*поля ввода*/
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.left-side label {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    justify-content: end;
+}
+
+.setup__input-wrapper{
+    width: 300px;
+    height: 54px;
+    box-sizing: border-box;
+}
+
+.input::placeholder {
+    font-weight: normal;
+    opacity: 0.6;
+    color: #2c2c2c;
+}
+
+.setup__input-error::placeholder {
+    color: #ff2727;
+    margin: 0;
+}
+
+.right-side {
+    /*position: relative;*/
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    justify-content: space-between;
+    /*height: 100%;*/
+}
+
+/*|||||||||||||||||||||||||||||||||| AVATAR ||||||||||||||||||||||||||||||||*/
+
+.avatar-section {
+    display: flex;
+    /*justify-content: space-between;*/
+    position: relative;
+    width: 100%;
+    height: 180px;
+    gap: 20px;
+    /*margin-bottom: 30px;*/
+}
+
+/*.profile-image {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 20px;
+    background-color: #ddd;
+}*/
+
+.avatar-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    cursor: pointer;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 20px;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0); /* прозрачно по умолчанию */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    border-radius: 20px;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.avatar-overlay-text {
+    /*background-color: #0C8CE8;*/
+    text-align: center;
+    padding: 0 10px;
+}
+
+/*|||||||||||||||||||||||||||||||||| AVATAR ||||||||||||||||||||||||||||||||*/
+
+.settings-icon {
+    width: 108px;
+    position: absolute;
+    top: 0;
+    right: -40px;
+    background: none;
+    border: none;
+    cursor: default;
+}
+
+.bio-button-section{
+    display: flex;
+    flex-direction: column;
+}
+
+.label-bio {
+    align-self: flex-start;
+    margin-bottom: 8px;
+    margin-left: 20px;
+}
+
+.bio-textarea {
+    width: 300px;
+    height: 206px;
+    padding: 12px;
+    resize: none;
+    border: 1px solid #828282;
+    border-radius: 17px;
+
+    outline: none; /*убирает дурацкую обводку когда печатаешь*/
+
+    margin-bottom: 22px;
+    box-sizing: border-box;
+    background-color: #F5F5F5;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.bio-textarea:focus{
+    border: 1px solid #828282;
+}
+
+.setup-button{
+    /*position: absolute;
+    bottom: 0;*/
+    /*margin-top: 22px;*/
+    width: 300px;
+    height: 54px;
+    border-radius: 17px;
+}
+
+

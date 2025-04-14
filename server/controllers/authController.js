@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const db = require('../db');
-const { User } = require('../sequelize/models');
+const { User, UserProfile, Section } = require('../sequelize/models');
 
 
 const registerUser = async (req, res) => { //регистрация
@@ -21,6 +21,19 @@ const registerUser = async (req, res) => { //регистрация
             password: hashedPassword,
         });
 
+        await Section.bulkCreate([  // если пользователь зарегался, нужно сделать ему корневые папки.
+            {
+                name: 'Themes',
+                parent_id: null,
+                user_id: newUser.id,
+            },
+            {
+                name: 'Tickets',
+                parent_id: null,
+                user_id: newUser.id,
+            },
+        ]);
+
         res.status(201).json({
             id: newUser.id,
             email: newUser.email,
@@ -28,7 +41,7 @@ const registerUser = async (req, res) => { //регистрация
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'ошибка сервера' });
+        res.status(500).json({ message: 'Ошибка сервера' });
     }
 };
 
@@ -39,6 +52,7 @@ const loginUser = async (req, res) => { //авторизация
     //console.log("TELO: ", req.body);
 
     try {
+
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(400).json({ message: 'Неверный email или пароль' });
@@ -49,17 +63,32 @@ const loginUser = async (req, res) => { //авторизация
             return res.status(400).json({ message: 'Неверный email или пароль' });
         }
 
+        const userData = await User.findOne({
+            where: { email },
+            include: {
+                model: UserProfile,
+                as: 'profile', // ассоциация
+                attributes: ['first_name', 'second_name', 'faculty', 'position', 'university', 'city'], //поля, которые обязательно должны быть заполнены
+                //если они не заполнены, клиент направит юзера их заполнять
+            },
+        });
+
+        //console.log("USER DATA: ", userData);
+
         const token = jwt.sign(
             { userId: user.id, isAdmin: user.isAdmin },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '30d' }
         );
 
-        res.json({ token });
+        res.json({
+            token,
+            userProfile: userData.profile, // возвращаем данные из профиля
+        });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'ошибка сервера' });
+        res.status(500).json({ message: 'Ошибка сервера' });
     }
 };
 

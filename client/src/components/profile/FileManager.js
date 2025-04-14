@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Profile.css';
+/*import './Profile.css';*/
+import './FileManager.css';
 import '../../styles/global.css';
 import useSelection from '../utils/useSelection';
 import DropZone from '../utils/DropZone';
@@ -9,7 +10,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
 
-const FolderStructure = ({ activeTab }) => {
+const FileManager = ({ activeTab }) => {
     const [folders, setFolders] = useState([]); // для хранения папок
     const [files, setFiles] = useState([]); // для хранения файлов
     const [isLoadingFolders, setIsLoadingFolders] = useState(true); // индикатор окончания первичной загрузки
@@ -417,7 +418,7 @@ const FolderStructure = ({ activeTab }) => {
     };
 
     const handleFileUpload = async (file) => {
-        //console.log("FILE TO UPLOAD:", file);
+        console.log("FILE TO UPLOAD:", file);
         const token = localStorage.getItem('token');
         const parent_Id = pathTo?.length ? pathTo[pathTo.length - 1] : getRootFolderId();
 
@@ -567,9 +568,10 @@ const FolderStructure = ({ activeTab }) => {
 
     const handleTEST = () => {
         //console.log("MOVE FILES AND MOVE FOLDERS: ", moveFiles, moveFolders);
-        //console.log("FILES: ", files);
+        console.log("FILES: ", files);
+        //console.log("FOLDERS: ", folders);
         //console.log("CURRENT FOLDER ID: ", currentFolderId);
-        console.log("PATH TO: ", pathTo);
+        //console.log("PATH TO: ", pathTo);
         //console.log("LAST SELECTED FILE: ", lastSelectedFile);
         //.log("LAST SELECTED FOLDER: ", lastSelectedFolder);
         //.log("SELECTED AREA FOLDERS && LAST SELECTED FOLDER: ", selectedAreaFolders, lastSelectedFolder);
@@ -640,12 +642,26 @@ const FolderStructure = ({ activeTab }) => {
                             <img
                                 src={`${PUBLIC_URL}/icons/Folder.svg`}
                                 alt={`${folder.name}`}
-                                className="item-icon" />
+                                className="item-icon"
+                                draggable={false}
+                            />
                             <div className="item-name">{folder.name}</div>
                         </div>
                     </div>
                 )
             });
+    };
+
+    const getFileIcon = (fileName) => {
+        const extension = fileName.split('.').pop().toLowerCase();
+
+        const iconMap = {
+            docx: `${PUBLIC_URL}/icons/DOCX.svg`,
+            /*pdf: `${PUBLIC_URL}/icons/PDF.svg`,
+            txt: `${PUBLIC_URL}/icons/TXT.svg`,*/  // на будущее мб
+        };
+
+        return iconMap[extension] || `${PUBLIC_URL}/icons/unknown.svg`;
     };
 
     const renderFiles = (parentId) => {
@@ -668,9 +684,11 @@ const FolderStructure = ({ activeTab }) => {
                         className={fileClass}
                         onClick={() => handleSelectFile(file.id)}>
                         <img
-                            src={`${PUBLIC_URL}/icons/DOCX.svg`}
+                            /*src={`${PUBLIC_URL}/icons/DOCX.svg`}*/
+                            src={getFileIcon(file.fileName)}
                             alt={`${file.fileName}`}
                             className="item-icon"
+                            draggable={false}
                         />
                         <div className="item-name">{file.fileName}</div>
                     </div>
@@ -682,31 +700,32 @@ const FolderStructure = ({ activeTab }) => {
         <div className="profile__folders">
             <div className="folder-structure__toolbar">
                 <button onClick={handleBack} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/back_arrow.svg`} alt="Back" className="toolbar-btn__icon"/></button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/back_arrow.svg`} alt="Back" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handleForward} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/forward_arrow.svg`} alt="Forward" className="toolbar-btn__icon"/></button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/forward_arrow.svg`} alt="Forward" className="toolbar-btn__icon" draggable={false}/></button>
                 <div className="folder-path">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/path.svg`} alt="Forward" className="toolbar-btn__icon"/><p>{renderFolderPath()}</p>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/path.svg`} alt="Forward" className="toolbar-btn__icon" draggable={false}/><p>{renderFolderPath()}</p>
                 </div>
                 <button onClick={handleCreateFolder} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/create.svg`} alt="Create" className="toolbar-btn__icon"/> Создать</button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/create.svg`} alt="Create" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handleDeleteItem} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} alt="Delete" className="toolbar-btn__icon"/></button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} alt="Delete" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handleRenameItem} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/Rename.svg`} alt="Rename" className="toolbar-btn__icon"/></button>
-                <button onClick={handleUploadFile} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} alt="Upload file" className="toolbar-btn__icon"/> Загрузить</button>
-                <button onClick={handleDownloadFile} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/download_file.svg`} alt="Download file" className="toolbar-btn__icon"/> Скачать</button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/Rename.svg`} alt="Rename" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handleMoveItem} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/move.svg`} alt="Move" className="toolbar-btn__icon"/></button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/move.svg`} alt="Move" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handlePasteItem} className="toolbar-btn">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/paste.svg`} alt="Paste" className="toolbar-btn__icon"/></button>
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/paste.svg`} alt="Paste" className="toolbar-btn__icon" draggable={false}/></button>
+                <button onClick={handleUploadFile} className="toolbar-btn">
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} alt="Upload file" className="toolbar-btn__icon toolbar-icon-margin" draggable={false}/> Загрузить</button>
+                <button onClick={handleDownloadFile} className="toolbar-btn">
+                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/download_file.svg`} alt="Download file" className="toolbar-btn__icon toolbar-icon-margin" draggable={false}/> Скачать</button>
+
 
                 <button onClick={handleTEST} className="toolbar-btn">   TEST   </button>
             </div>
             <DropZone ref={dropZoneRef} onFileUpload={handleFileUpload}>
-                <div className="folder-list" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                <div className="folder-list font-14" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                     {isSelecting && (
                         <div
                             className="selection-box"
@@ -736,4 +755,4 @@ const FolderStructure = ({ activeTab }) => {
     );
 };
 
-export default FolderStructure;
+export default FileManager;

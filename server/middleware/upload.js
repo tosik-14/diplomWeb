@@ -5,12 +5,12 @@ const iconv = require('iconv-lite'); // для корректной работы
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const userId = req.user.userId;  // Предполагаем, что ID пользователя доступен через токен
+        const userId = req.user.userId;  // id юзера из токена
         const uploadPath = path.join('uploads', `user_${userId}`).replace(/\\/g, '/');
 
 
-        // Проверяем, существует ли папка, если  нет — создаем
-        if (!fs.existsSync(uploadPath)) {
+
+        if (!fs.existsSync(uploadPath)) {   // если папка не существует, создаем новую
             fs.mkdirSync(uploadPath, { recursive: true });
         }
 
@@ -26,14 +26,14 @@ const storage = multer.diskStorage({
         let decodedName;
 
         try {
-            decodedName = iconv.decode(Buffer.from(file.originalname, 'latin1'), 'utf8');
-            console.log('DECODED NAME:', decodedName);
+            decodedName = iconv.decode(Buffer.from(file.originalname, 'latin1'), 'utf8'); //декодируем имена файлов
+            //console.log('DECODED NAME:', decodedName);
         } catch (err) {
-            console.error('Ошибка при декодировании имени файла:', err.message);
+            //console.error('Ошибка при декодировании имени файла:', err.message);
             decodedName = file.originalname; // fallback
         }
 
-        const uniqueName = Date.now() + '-' + decodedName;
+        const uniqueName = Date.now() + '-' + decodedName; //добавляем уникальный номер каждому файлу
 
         //console.log('UNIQUE NAME: ', uniqueName);
         cb(null, uniqueName);

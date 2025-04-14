@@ -3,3 +3,4 @@ node_modules/
 build/
 path_to_pr.txt
 /server/uploads/
+/client/public/fonts/

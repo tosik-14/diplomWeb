@@ -1,0 +1,275 @@
+.profile__tabs {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    gap: 0;
+    justify-content: flex-start;
+}
+
+.profile__tab {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+
+    width: 100%;
+    height: 40px;
+    padding: 0;
+    background-color: #eaeaea;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+.profile__tab.active {
+    background-color: #f4f4f4;
+    border-color: #3498db;
+    font-weight: 550;
+    z-index: 2;
+    position: relative;
+}
+
+.profile__tab:hover {
+    /*background-color: #e2e6ea;*/
+}
+
+.profile__content {
+    display: flex;
+    /*min-height: 100vh;*/
+    flex: 1;
+    height: 100%;
+    flex-direction: column;
+    width: 100%;
+    margin-top: -1px;
+    /*margin-bottom: 40px;*/
+    padding: 10px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-sizing: border-box;
+}
+
+.profile__files {
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    flex: 1;
+}
+
+.profile__folders {
+    width: 100%;
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile__files h3 {
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+
+/*||||||||||||||||||||||||||||||||| FOLDERS |||||||||||||||||||||||||||||||||||||*/
+
+
+/*||||||||||||TOOLBAR|||||||||||||*/
+.folder-structure__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 5px 5px 5px;
+    box-sizing: border-box;
+}
+
+.toolbar-btn {
+    font-family: 'Montserrat', sans-serif;
+
+    display: flex;
+    background: transparent;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    gap: 5px;
+}
+
+.toolbar-btn:hover {
+    background-color: #e3e3e3;
+}
+
+.toolbar-btn__icon {
+    width: 20px;
+    height: 20px;
+    align-items: center;
+}
+
+.toolbar-icon-margin {
+    margin-right: 10px;
+}
+
+.folder-path {
+    width: 40%;
+    margin: 0 7px;
+    padding: 3px 15px;
+    font-size: 14px;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    gap: 10px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+}
+
+.folder-path p {
+    color: #282c34;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    text-align: left;
+}
+/*.folder-path p::before {
+    content: '...';
+    font-weight: bold;
+    font-size: 16px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    background: #ff0000;
+    padding-right: 5px;
+}*/
+
+/*.rofl {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;  !*изменение размера картинки с сохранением пропорций *!
+    opacity: 0.7; !* настройка прозрачности. 1 - полная непрозрачность, 0.5 - наполовину прозрачный и тд *!
+}*/
+/*||||||||||||CONTENT|||||||||||||*/
+.folder-list {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 100px);
+    width: 100%;
+    gap: 10px;
+    flex-grow: 1;
+    /*height: 100%;*/
+    overflow: auto;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*justify-content: center;*/
+    width: 100px;
+    height: 125px;
+    text-align: center;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    border-radius: 4%;
+    user-select: none;
+
+    padding: 8px 5px; /* добавим немного отступа сверху */
+    overflow: hidden;
+}
+
+
+.item-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.item-name {
+    /*margin-top: 5px;*/
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; /* максимум 3 строки */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word; /* перенос даже без пробелов */
+    font-size: 14px;
+    line-height: 1.2;
+    max-height: calc(1.2em * 3); /* 3 строки */
+}
+
+
+
+.selected-folder {
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);*/
+    box-sizing: border-box;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 4%;
+}
+
+.last-selected {
+    border: 1px solid rgba(128, 179, 255, 0.68);
+    box-sizing: border-box;
+    background-color: rgba(0, 123, 255, 0.1);
+    /*box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);*/
+    border-radius: 4%;
+}
+
+/*.folder-item.selected {
+    border: 2px solid #007bff;  !* Рамка синим цветом *!
+    box-sizing: border-box;
+    background-color: rgba(0, 123, 255, 0.1);  !* Легкий фон *!
+}*/
+
+.selection-box {
+    position: absolute;
+    border: 1px solid #007bff;
+    background-color: rgba(0, 123, 255, 0.2);
+    /*background-color: rgba(255, 0, 0, 0.2);*/
+    pointer-events: none;
+    z-index: 10;
+}
+
+/*|||||||||||||||||||||||||||||||||| DROP ZONE |||||||||||||||||||||||||||||*/
+
+.drop-zone {
+    display: flex;
+    border: 2px dashed transparent;
+    border-radius: 5px;
+    /*padding: 40px;*/
+    text-align: center;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    flex-grow: 1;
+    /*height: 100%;*/
+    overflow: auto;
+}
+
+.drop-zone.dragging {
+    background-color: rgba(0, 120, 255, 0.1);
+    border: 2px dashed #0078ff;
+    color: #0078ff;
+}
+
+.drop-zone-text {
+    font-size: 16px;
+}

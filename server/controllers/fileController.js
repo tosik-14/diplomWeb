@@ -53,8 +53,8 @@ const uploadFile = async (req, res) => { // загрузить файл
 
         res.json(newFile);  //ответ
     } catch (error) {
-        console.error('ERROR while UPLOAD archive:', error);
-        res.status(500).json({ message: 'Server error while upload archive' });
+        console.error('ERROR while UPLOAD file:', error);
+        res.status(500).json({ message: 'Server error while upload file' });
     }
 };
 

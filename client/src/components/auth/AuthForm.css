@@ -1,0 +1,141 @@
+.container {
+    /*background: transparent !important;
+    box-shadow: none !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100vh !important; !* вся высота окна view height *!*/
+}
+
+.auth__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.auth__form-wrapper {
+    width: 552px;
+    /*height: 505px;*/
+    padding-bottom: 30px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    background-color: #F5F5F5;
+
+    border-radius: 30px;
+}
+
+.auth__title {
+    text-align: center;
+    font-weight: 1000;
+    cursor: default;
+}
+
+.authorization {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth__inputs{
+    display: flex;
+    flex-direction: column;
+    gap: 43px;
+    /*margin-bottom: 27px;*/
+}
+
+.auth__input-wrapper {
+    position: relative;
+    width: 454px;
+    height: 50px;
+    margin: 0 auto;
+}
+
+.floating-label {
+    position: absolute;
+    top: -10px;
+    left: 35px;
+    background: #F5F5F5;
+    padding: 0 5px;
+    font-size: 14px;
+    color: #828282;
+    z-index: 2;
+}
+
+/*.input-icon {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    border: 1px solid #828282;
+    border-radius: 17px;
+    padding-left: 10px;
+    background-color: #F5F5F5;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.input-icon input {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.input-icon img {
+    margin-right: 10px;
+}
+
+.input-icon input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    background-color: #F5F5F5;
+}*/
+
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 27px;
+    margin-left: 55px;
+    background-color: #F5F5F5;
+    /*margin-bottom: 27px;*/
+}
+
+.remember input[type="checkbox"] {
+    width: 21px;
+    height: 21px;
+    accent-color: #0C8CE8;
+    cursor: pointer;
+}
+
+.auth__button {
+    width: 454px;
+    height: 54px;
+    /*background-color: #0C8CE8;
+    color: #F5F5F5;
+    border: none;
+
+    cursor: pointer;*/
+    border-radius: 17px;
+    margin: 27px auto 15px auto;
+}
+
+/*.login__button:hover {
+    background-color: #007BFF;
+}*/
+
+.auth__footer {
+    text-align: center;
+    cursor: default;
+}
+
+.auth__footer a{
+    text-decoration: none;
+    color: black;
+}
+
+.input-error {
+    color: red;
+    /*font-size: 14px;*/
+    /*margin-top: 5px;*/
+    margin-left: 44px;
+}
