@@ -15,16 +15,21 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
+    "docx": "^8.4.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "iconv-lite": "^0.6.3",
+    "image-size": "^2.0.2",
     "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.9.0",
     "multer": "^1.4.5-lts.2",
     "pg": "^8.14.1",
     "pg-hstore": "^2.3.4",
     "pg-promise": "^11.13.0",
     "sequelize": "^6.37.7",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "unzipper": "^0.12.3",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

@@ -1,0 +1,627 @@
+.ticket-creator__backdrop {
+
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /*background: rgba(0,0,0,0.4);*/
+    overflow-y: auto;
+    z-index: 999;
+
+
+    pointer-events: none;
+    /*
+    padding: 10% 20%;
+    box-sizing: border-box;
+    */
+}
+
+.ticket-creator__header {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    /*justify-content: space-between;*/
+    align-items: center;
+    cursor: default;
+    font-weight: 700;
+    background-color: #0462A6;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.ticket-creator__header-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px 0 40px;
+
+
+}
+
+.ticket-creator__close{
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.ticket-creator__close img{
+    width: 20px;
+    height: 20px;
+}
+
+
+
+
+.ticket-creator__wrapper{
+    /*background-color: red;*/
+    /*position: relative;*/
+    z-index: 9999;
+}
+
+.ticket-creator {
+    pointer-events: auto;
+
+    height: 100%;
+    /*max-height: calc(100vh);*/ /* отступ сверху/снизу */
+    /*max-width: 1200px;*/  /* отступ по бокам */
+    /*min-width: 902px;*/
+    /*min-height: 300px;*/
+    /*resize: both;*/
+    /*resize: none;*/ /*я не хочу делать кастомный ресайзер*/
+    overflow: hidden;
+
+
+    background: #ffffff;
+    border-radius: 17px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid #0462A6;
+
+    /*position: absolute;
+    z-index: 999;*/
+}
+
+
+
+
+.ticket-creator__modal {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    padding: 15px 40px 15px;
+    box-sizing: border-box;
+    position: relative;
+
+    flex: 1 1 auto;
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    min-height: 0;
+}
+
+
+
+
+
+
+
+.ticket-creator__row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.ticket-creator__column {
+    display: flex;
+    flex-direction: column;
+    /*justify-content: right;*/
+    gap: 17px;
+
+}
+
+.ticket-num--filename{
+    gap: 45px;
+}
+
+.label-column{
+    display: flex;/*
+    width: 15%;*/
+    gap: 51px;
+    align-items: flex-end;
+}
+
+.input-column{
+    display: flex;
+    width: 100%;
+    gap: 17px;
+    flex: 1;
+}
+
+
+
+
+/*///////////////////////////////ДЕЛАЕМ ПОЛЕ С КРЕСТИКОМ\\\\\\\\\\\\\\\\\\\*/
+.input-with-clear {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0 10px;
+    box-sizing: border-box;
+    height: 54px;
+    border-radius: 20px;
+    border: 1px solid #828282;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.input-with-clear label{
+    position: absolute;
+    top: -11px;
+    left: 25px;
+    background-color: #FFFFFF;
+    padding: 0 5px;
+    color: #828282;
+}
+
+.input-with-clear input {
+    width: 100%;
+}
+
+.clear-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+/*|||||||||||||||||||||||||||||||||||||||всё*/
+
+.ticket-creator__input {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    padding-right: 25px;
+    /*box-sizing: border-box;
+    outline: none;
+    height: 54px;
+    border-radius: 20px;
+    border: 1px solid #828282;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);*/
+    border: none;
+    outline: none;
+}
+
+.ticket-creator__input-smaller {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    padding: 0 10px;
+    box-sizing: border-box;
+    outline: none;
+    height: 54px;
+    border-radius: 20px;
+    border: 1px solid #828282;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.input-small {
+    width: 61px;
+    height: 41px;
+    padding: 5px 8px;
+    border-radius: 10px;
+}
+
+/*
+.input-filename{
+    width: 274px;
+}
+*/
+
+
+.input-wide {
+     max-width: 751px;
+     width: 100%;
+ }
+
+.input-tiny {
+    max-width: 30px;
+    width: 30px;
+    border-radius: 10px;
+    height: 38px;
+    padding: 0 3px;
+}
+
+.input-medium {
+    max-width: 49%;
+    width: 100%;
+    position: relative;
+}
+
+
+
+
+
+
+
+
+
+
+
+.ticket-creator__column--right {
+    align-items: flex-end;
+}
+
+
+
+.ticket-creator__input-filename {
+    flex: 1;
+    min-width: 200px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+
+
+/*.ticket-creator__session-row-wrapper{
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 17px 0;
+}
+
+.session-row{
+    width: 100%;
+    gap: 40px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    !*padding-left: 50%;*!
+}*/
+
+/*.ticket-creator__session-row-wrapper {
+    display: flex;
+
+
+}*/
+
+.session-row {
+    position: static;
+    transform: none;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.span-year-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.ticket-creator__double-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 550;
+    padding: 5px 12px;
+    border: none;
+    height: 39px;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.session-winter{
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    background-color: #B9E2FF;
+    width: 140px;
+}
+
+.session-summer{
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: #FFDFB3;
+    width: 140px;
+}
+
+.ticket-creator__double-btn.active {
+    border: 1px solid rgba(105,0,86,0.3);
+
+}
+
+.ticket-creator__double-btn:hover {
+    background-color: #efb3ff;
+}
+
+
+
+
+
+
+.ticket-creator__question-config {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 15px 10px;
+    background: #f9f9f9;
+    border-radius: 12px;
+}
+
+.ticket-creator__question-header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.dropzone-error-message {
+    color: red;
+    /*margin-top: 8px;*/
+    /*font-family: Montserrat, sans-serif;*/
+}
+
+
+.ticket-creator__btn-group {
+    display: flex;
+}
+
+.add-new-ques-type{
+    background-color: #C4C5FE;
+    border-radius: 8px;
+}
+
+
+
+.ticket-creator__dropzone_row {
+    display: flex;
+    flex-direction: row;
+    border: 1px dashed #828282;
+}
+
+.ticket-creator__dropzone-container {
+    border-left: 1px dashed #828282;
+    display: flex;
+    width: 100%;
+}
+
+.ticket-creator__dropzone-container.first {
+    border-left: none;
+}
+
+.ticket-creator__dropzone-multitype {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    /*border-right: 1px dashed #828282;*/
+}
+
+
+/*ОТОБРАЖЕНИЕ ФАЙЛОВ*/
+
+.dropzone-file-list {
+    margin-top: 8px;
+    display: flex;
+    /*flex-direction: column;*/
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 4px;
+    position: relative;
+    padding-top: 12px;
+}
+
+
+
+.dropzone-questionsPerType{
+    position: absolute;
+    top: -20px;
+    left: 15px;
+    background-color: #f9f9f9;
+    border: 1px dashed #828282;
+    box-sizing: border-box;
+}
+
+.dropzone-questionsPerType input{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 550;
+    background-color: #f9f9f9;
+    width: 25px;
+    height: 25px;
+    border: none;
+    outline: none;
+}
+
+.dropzone-questionsPerType label{
+    padding: 0 2px;
+    color: black;
+}
+
+.delete-new-ques-type {
+    position: absolute;
+    right: 15px;
+    top: -20px;
+    background-color: #f9f9f9;
+    border: 1px dashed #828282;
+
+}
+
+.delete-new-ques-type img {
+    width: 22px;
+    height: 22px;
+}
+
+
+
+.dropzone-file-row {
+    display: flex;
+    align-items: center;
+    background: #aeddff;
+    color: #333;
+    border-radius: 15px;
+
+    padding: 0 8px;
+    box-sizing: border-box;
+
+    min-height: 20px;
+    max-width: 100%;
+
+    overflow: hidden;
+}
+
+.dropzone-file-row img{
+    width: 16px;
+    height: 16px;
+}
+
+.dropzone-file-icon {
+    margin-right: 8px;
+
+}
+
+.dropzone-file-name {
+    flex: 1;
+    overflow: hidden;
+
+    white-space: normal;
+    word-break: break-word;
+    text-overflow: ellipsis;
+    padding-right: 4px;
+}
+
+.dropzone-file-remove {
+    border: none;
+    cursor: pointer;
+    background: #aeddff;
+    padding: 2px 4px 0 4px;
+    box-sizing: border-box;
+}
+
+.dropzone-file-remove img{
+    width: 14px;
+    height: 14px;
+}
+
+
+
+
+
+
+
+
+.ticket-creator__generate-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ticket-creator__date-protocol {
+    display: flex;
+    gap: 40px;
+}
+
+.input-protocol{
+    max-width: 41px;
+    width: 100%;
+    height: 41px;
+    border-radius: 10px;
+}
+
+.ticket-creator__input-date {
+
+}
+
+.input-date-part{
+    max-width: 45px;
+    width: 100%;
+    height: 41px;
+    border-radius: 0px;
+}
+
+.ticket-creator__input-date input:first-child {
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+    border-right: none;
+}
+
+
+
+.ticket-creator__input-date input:last-child {
+    max-width: 61px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    border-left: none;
+}
+
+
+.ticket-creator__generate-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 550;
+    width: 183px;
+    height: 54px;
+    border-radius: 16px;
+    position: relative;
+}
+
+.generate-btn-alert{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    color: red;
+    font-weight: 400;
+    top: -37px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+.resizer {
+    /*border: 1px solid black;*/
+    position: absolute;
+}
+
+.resizer--right {
+    right: 0;
+    bottom: 0;
+    width: 2px;
+    height: 100%;
+    cursor: ew-resize;
+}
+
+.resizer--bottom{
+    height: 2px;
+    cursor: ns-resize;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.resizer--left{
+    width: 2px;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    cursor: ew-resize;
+}
+
+.resizer--top {
+    height: 2px;
+    cursor: ns-resize;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+
+

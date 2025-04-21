@@ -40,6 +40,11 @@
 
 
 
+.admin-panel-toolbar-btns{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
 
 .admin-panel__controls {
     display: flex;
@@ -57,6 +62,21 @@
     height: 50px;
     cursor: pointer;
 }
+
+.admin-panel__btn-icon{
+    height: 50px;
+    width: 50px;
+    background-color: #D9D9D9;
+    border: 1px solid #A6A6A6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.admin-panel__btn-icon img {
+    height: 40px;
+    width: 40px;
+}
+
 
 
 

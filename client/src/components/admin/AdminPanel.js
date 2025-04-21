@@ -91,6 +91,8 @@ const AdminPanel = () => {
         await handleRoleUpdate(false);
     };
 
+
+
     const handleCheckboxChange = (userId) => {
         setSelectedUserIds((prevSelected) =>
             prevSelected.includes(userId)
@@ -104,6 +106,30 @@ const AdminPanel = () => {
         setExpandedUserId(prev => (prev === userId ? null : userId));
     };*/
 
+    const deleteUser = async () => {
+        if(selectedUserIds.length === 0){
+            alert("Выберите пользователей");
+            return;
+        }
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`${API_URL}/api/auth/delete-users`,{
+                    data: { userIds: selectedUserIds },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            ).then(() => {
+                fetchAdminData();
+            });
+
+            //console.log('UPDATED:', response.data);
+            setSelectedUserIds([]); // очищаем выделение после обновления
+        } catch (error) {
+            console.error('Ошибка при удалении пользователей:', error);
+        }
+    };
+
     return (
         <div className="container">
             <div className="admin-container">
@@ -114,12 +140,16 @@ const AdminPanel = () => {
                         <button className="admin-panel__back button_st font-16" onClick={onBackToProfile}>Вернуться в профиль</button>
                     </div>
 
+                    <div className="admin-panel-toolbar-btns">
+                        <div className="admin-panel__controls">
+                            <button className="admin-panel__btn font-16" onClick={onSetAdmin}>Set admin</button>
+                            <button className="admin-panel__btn font-16" onClick={onSetUser}>Set user</button>
+                        </div>
 
-                    <div className="admin-panel__controls">
-                        <button className="admin-panel__btn font-16" onClick={onSetAdmin}>Set admin</button>
-                        <button className="admin-panel__btn font-16" onClick={onSetUser}>Set user</button>
+                        <button className="admin-panel__btn-icon" onClick={deleteUser}>
+                            <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} alt="close" />
+                        </button>
                     </div>
-
 
                     <div className="admin-panel__table">
                         <div className="admin-panel__row admin-panel__row--header">

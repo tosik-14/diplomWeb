@@ -178,7 +178,8 @@ const getAllFilesByFolderIds = async (folderIds) => {  //здесь возвра
 
 const deleteFilesFromDisk = (files) => {   //файлы удаляются с диска, по пути
     files.forEach(file => {
-        const fullPath = path.resolve(file.filePath); //тут мы делаем из пути который в бд полный путь от корня
+        const fullPath = path.resolve(__dirname, '..', file.filePath); //тут мы делаем из пути который в бд полный путь от корня
+        //console.log("FULL FILE PATH", fullPath);
         try {
             fs.unlinkSync(fullPath);
             //console.log("DELETED FILE FULL PATH: ", fullPath);

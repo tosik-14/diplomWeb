@@ -3,7 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import './FileManager.css';
 import '../../styles/global.css';
 import useSelection from '../utils/useSelection';
+import NameInputModal from './NameInputModal'; //ввод имени файла/папкуи
 import DropZone from '../utils/DropZone';
+import { createCustomDragPreview } from '../utils/dragPreview';
 import axios from "axios";
 import {data} from "react-router-dom";
 const API_URL = process.env.REACT_APP_API_URL;
@@ -30,8 +32,15 @@ const FileManager = ({ activeTab }) => {
     const [isMoveMode, setIsMoveMode] = useState(false); //индикатор, показывающий, включен ли режим перемещения
 
     const dropZoneRef = useRef();  //ссылка на элемент страницы, которая будет использоваться как dropZone
+    const isInternalDragging = useRef(false); // флаг, который срабатывает только когда файлы перетаскиваются внутри самой дропзоны
+    const [fileError, setFileError] = useState(false);  // флаг ошибки
+    const [fileErrorMessage, setFileErrorMessage] = useState(''); // текст ошибки, приходит из DropZone
     /*const [isSelecting, setIsSelecting] = useState(false);
     const [selectionArea, setSelectionArea] = useState({ startX: 0, startY: 0, endX: 0, endY: 0 });*/
+
+    const [showNameModal, setShowNameModal] = useState(false); // индикатор окна ввода имени
+    const [initialName, setInitialName] = useState(''); // старое имя файла.
+    const [modalType, setModalType] = useState(null); // "rename" или "create" для переименования. Чтобы NameInputModal их различал
 
     useEffect(() => {
         const fetchFolders = async () => {
@@ -232,10 +241,26 @@ const FileManager = ({ activeTab }) => {
         }
     };
 
-    const handleCreateFolder = async () => {
+    const handleSaveName = (name) => {
+        if (modalType === "create") {
+            createNewFolder(name); // функция для создания папки
+        } else if (modalType === "rename") {
+            renameItem(name); // функция для переименования папки/файла
+        }
+
+        setShowNameModal(false);
+    };
+
+    const handleCreateFolder = () => {
+        setInitialName("Новая папка");
+        setModalType("create");
+        setShowNameModal(true);
+    };
+
+    const createNewFolder = async (folderName) => {
         const token = localStorage.getItem('token');
 
-        const folderName = prompt("Введите имя новой папки:");
+        /*const folderName = prompt("Введите имя новой папки:");*/
 
         if (!folderName) return;
 
@@ -343,16 +368,32 @@ const FileManager = ({ activeTab }) => {
         }
     };
 
-    const handleRenameItem = async () => {
+    const handleRename = () => {
+        if (!lastSelectedFolder && !lastSelectedFile) {
+            alert("выберите, что хотите переименовать"); //заменить на нормальное предупреждение, у всех кнопок.
+            return;
+        }
+
+        const targetId = lastSelectedFolder || lastSelectedFile;
+        const item = folders.find(f => f.id === targetId) || files.find(f => f.id === targetId);
+
+        if (!item) return;
+
+        setInitialName(item.name || item.fileName);
+        setModalType("rename");
+        setShowNameModal(true);
+    };
+
+    const renameItem = async (newName) => {
         const token = localStorage.getItem('token');
 
-        if (!lastSelectedFolder && !lastSelectedFile) {
+        /*if (!lastSelectedFolder && !lastSelectedFile) {
             alert("выберите, что хотите переименовать");
             return;
         }
 
         const newName = prompt("введите имя");
-        if (!newName) return;
+        if (!newName) return;*/
 
         const headers = {
             'Content-Type': 'application/json',
@@ -569,11 +610,11 @@ const FileManager = ({ activeTab }) => {
     const handleTEST = () => {
         //console.log("MOVE FILES AND MOVE FOLDERS: ", moveFiles, moveFolders);
         console.log("FILES: ", files);
-        //console.log("FOLDERS: ", folders);
+        console.log("FOLDERS: ", folders);
         //console.log("CURRENT FOLDER ID: ", currentFolderId);
         //console.log("PATH TO: ", pathTo);
         //console.log("LAST SELECTED FILE: ", lastSelectedFile);
-        //.log("LAST SELECTED FOLDER: ", lastSelectedFolder);
+        //console.log("LAST SELECTED FOLDER: ", lastSelectedFolder);
         //.log("SELECTED AREA FOLDERS && LAST SELECTED FOLDER: ", selectedAreaFolders, lastSelectedFolder);
         //console.log("SELECTED AREA FOLDERS", selectedAreaFolders);
         //console.log("IS SELECTING", isSelecting);
@@ -657,6 +698,7 @@ const FileManager = ({ activeTab }) => {
 
         const iconMap = {
             docx: `${PUBLIC_URL}/icons/DOCX.svg`,
+            doc: `${PUBLIC_URL}/icons/DOC.svg`,
             /*pdf: `${PUBLIC_URL}/icons/PDF.svg`,
             txt: `${PUBLIC_URL}/icons/TXT.svg`,*/  // на будущее мб
         };
@@ -682,13 +724,35 @@ const FileManager = ({ activeTab }) => {
                         key={file.id}
                         id={file.id}
                         className={fileClass}
-                        onClick={() => handleSelectFile(file.id)}>
+                        draggable // делаем элемент перетягиваемым
+                        onClick={() => handleSelectFile(file.id)}
+                        onDragStart={(e) => {
+                            isInternalDragging.current = true;
+
+                            const draggedFileIds = selectedAreaFiles.length > 0
+                                ? selectedAreaFiles
+                                : [file.id]; // если выбран только один
+
+                            const draggedFiles = files.filter(f => draggedFileIds.includes(f.id)).map(f => ({
+                                id: f.id,
+                                name: f.fileName,
+                            }));
+
+                            e.dataTransfer.setData('application/json', JSON.stringify(draggedFiles));
+
+                            createCustomDragPreview(e, draggedFiles); // создается кастомная область для перетаскиваемых файлов.
+                        }}
+                        onDragEnd={() => {
+                            isInternalDragging.current = false; // сбрасываем
+                        }}
+                    >
                         <img
                             /*src={`${PUBLIC_URL}/icons/DOCX.svg`}*/
                             src={getFileIcon(file.fileName)}
                             alt={`${file.fileName}`}
                             className="item-icon"
-                            draggable={false}
+                            draggable={false} //отключаем перетягивание самой иконки чтобы драгэндроп не пытался ее словить | upd: не помогло))
+
                         />
                         <div className="item-name">{file.fileName}</div>
                     </div>
@@ -710,7 +774,7 @@ const FileManager = ({ activeTab }) => {
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/create.svg`} alt="Create" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handleDeleteItem} className="toolbar-btn">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} alt="Delete" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handleRenameItem} className="toolbar-btn">
+                <button onClick={handleRename} className="toolbar-btn">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/Rename.svg`} alt="Rename" className="toolbar-btn__icon" draggable={false}/></button>
                 <button onClick={handleMoveItem} className="toolbar-btn">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/move.svg`} alt="Move" className="toolbar-btn__icon" draggable={false}/></button>
@@ -724,7 +788,24 @@ const FileManager = ({ activeTab }) => {
 
                 <button onClick={handleTEST} className="toolbar-btn">   TEST   </button>
             </div>
-            <DropZone ref={dropZoneRef} onFileUpload={handleFileUpload}>
+            {showNameModal && (   // переименовать или дать имя окно
+                <NameInputModal
+                    initialName={initialName}
+                    isFile={modalType === "rename" && !!lastSelectedFile}
+                    onClose={() => setShowNameModal(false)}
+                    onSave={handleSaveName}
+                />
+            )}
+            <DropZone
+                ref={dropZoneRef}
+                onFileUpload={handleFileUpload}
+                isInternalDragging={isInternalDragging}
+                onFileError={(message) => {
+                    setFileError(true); // флаг ошибки
+                    setFileErrorMessage(message); // устанавливает текст сообщения
+                    setTimeout(() => setFileError(false), 5000); // скрывает надпись через 5 сек
+                }}
+            >
                 <div className="folder-list font-14" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                     {isSelecting && (
                         <div
@@ -750,6 +831,12 @@ const FileManager = ({ activeTab }) => {
                         renderFiles(currentFolderId) // Иначе отображаем файлы текущей папки
                     }
                 </div>
+                {fileError && ( //сообщение об ошибке видно только пока флаг тру
+                    <div className="file-manager-dropzone-error-message font-14">
+                        {fileErrorMessage}
+                    </div>
+                )}
+
             </DropZone>
         </div>
     );

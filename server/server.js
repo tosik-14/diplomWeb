@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const folderRoutes = require('./routes/folderRoutes');
 const fileRoutes = require('./routes/fileRoutes');
+const ticketsCreateRoutes = require('./routes/ticketsCreateRoutes');
 const path = require('path');
 
 
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', profileRoutes);
 app.use('/api', folderRoutes);
 app.use('/api', fileRoutes);
+app.use('/api/tickets-create', ticketsCreateRoutes);
 
 
 const PORT = 5000;

@@ -3,13 +3,28 @@ import './Profile.css';
 import '../../styles/global.css';
 import ProfileView from './ProfileView';
 import FileManager from "./FileManager";
+import TicketCreator from "../TicketCreator/TicketCreator";
+import { useLocation } from 'react-router-dom';
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
 const ProfilePage = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState({});
+
+    const location = useLocation(); //сюда будет передаваться ключ на изменение activeTab
+    const [fileManagerKey, setFileManagerKey] = useState(0); // для перерендера файл менеджера, чтобы он отобразил новую папку.
     const [activeTab, setActiveTab] = useState('questions'); // по дефолту выбранная кладка questions - Themes
+
     const [showProfileView, setShowProfileView] = useState(false);
+    const [showTicketCreator, setShowTicketCreator] = useState(false);
+
+    useEffect(() => { // принимает значение activeTab из другого компонента
+        if (location.state?.activeTab) {
+            setActiveTab(location.state.activeTab);
+            setFileManagerKey(prev => prev + 1);
+        }
+    }, [location.state]);
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -26,6 +41,7 @@ const ProfilePage = () => {
                 setUser(data);
                 //console.log("PATRONYMIC", data.patronymic);
                 //console.log("USER DATA", data);
+                setIsLoading(true);
             } else {
                 console.error('Ошибка при получении данных профиля');
             }
@@ -33,6 +49,10 @@ const ProfilePage = () => {
 
         fetchProfileData();
     }, []);
+
+    if (!isLoading) {
+        return <div>Загрузка...</div>;
+    }
 
     return (
         <div className="container">
@@ -59,12 +79,21 @@ const ProfilePage = () => {
 
                         </button>
 
-                        <button className="button_st font-16 profile__create-button">Создать билеты</button>
+                        <button className="button_st font-16 profile__create-button" onClick={() => setShowTicketCreator(true)}>Создать билеты</button>
 
                     </div>
 
 
                     {showProfileView && <ProfileView user={user} onClose={() => setShowProfileView(false)} />}
+                    {/*{showTicketCreator && <TicketCreator user={user} onClose={() => setShowTicketCreator(false)} />}*/}
+                    {isLoading &&  (
+                        <TicketCreator   //непосредственно окно создания билетов ооо дааа
+                            user={user}
+                            visible={showTicketCreator}
+                            onClose={() => setShowTicketCreator(false)}
+                        />
+                    )}
+
 
 
 
@@ -88,12 +117,12 @@ const ProfilePage = () => {
                     <div className="profile__content">
                         {activeTab === 'questions' && (
                             <div className="profile__files">
-                                <FileManager activeTab={activeTab}/>
+                                <FileManager activeTab={activeTab} key={fileManagerKey}/>
                             </div>
                         )}
                         {activeTab === 'tickets' && (
                             <div className="profile__files">
-                                <FileManager activeTab={activeTab}/>
+                                <FileManager activeTab={activeTab}  key={fileManagerKey}/>
                             </div>
                         )}
                     </div>

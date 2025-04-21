@@ -191,6 +191,7 @@
 
     padding: 8px 5px; /* добавим немного отступа сверху */
     overflow: hidden;
+
 }
 
 
@@ -261,7 +262,8 @@
     transition: background 0.2s ease-in-out;
     flex-grow: 1;
     /*height: 100%;*/
-    overflow: auto;
+    overflow: visible;
+    position: relative;
 }
 
 .drop-zone.dragging {
@@ -272,4 +274,12 @@
 
 .drop-zone-text {
     font-size: 16px;
+}
+
+.file-manager-dropzone-error-message{
+    color: red;
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
 }

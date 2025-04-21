@@ -6,7 +6,7 @@ const iconv = require('iconv-lite'); // для корректной работы
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const userId = req.user.userId;  // id юзера из токена
-        const uploadPath = path.join('uploads', `user_${userId}`).replace(/\\/g, '/');
+        const uploadPath = path.join(__dirname, '..', 'uploads', `user_${userId}`).replace(/\\/g, '/');
 
 
 

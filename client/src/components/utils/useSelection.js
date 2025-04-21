@@ -10,6 +10,8 @@ const useSelection = (folders, setLastSelectedFolder, files, setLastSelectedFile
     const [selectedAreaFiles, setSelectedAreaFiles] = useState([]);
 
     const handleMouseDown = (e) => {
+        if (e.target.closest('.item')) return; // если тыкнули по самому файлу, то выделение не начинается. вдруг юзер хочет перетащить файл
+
         const container = e.target.closest('.folder-list'); // поиск контейнера .folder-list. Если пользователь тыкнет по папке
                                                             // то он сначала проверит класс папки, если не сойдется с .folder-list
                                                             // то будет подниматься выше, пока не найдет контейнер с нужным классом
@@ -43,6 +45,7 @@ const useSelection = (folders, setLastSelectedFolder, files, setLastSelectedFile
     };
 
     const handleMouseUp = () => {
+        if(!isSelecting) return;
         setLastSelectedFolder(null);
         setLastSelectedFile(null);
         //console.log("SELECTION AREA", selectionArea);

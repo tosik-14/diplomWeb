@@ -9,7 +9,7 @@ const PUBLIC_URL = process.env.PUBLIC_URL;
 
 
 const ProfileSetup = () => {
-    const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState({ // данные юзера
         first_name: '',
         second_name: '',
         patronymic: '',
@@ -20,12 +20,24 @@ const ProfileSetup = () => {
         city: '',
         profile_image: ''
     });
-    const [isLoading, setIsLoading] = useState(true);
-    const fileInputRef = useRef(null);
-    const [avatarFile, setAvatarFile] = useState(null);
-    const [originalData, setOriginalData] = useState(null);
-    const [validationErrors, setValidationErrors] = useState([]);
+    const [isLoading, setIsLoading] = useState(true); //флаг загрузки страницы
+    const fileInputRef = useRef(null); //референс на DOM элемент, что я мог на картинку накинуть невидимы input file
+    const [avatarFile, setAvatarFile] = useState(null); // тут картинка аватарки будет, если пользователь станет менять
+    const [originalData, setOriginalData] = useState(null); // его текущие данные
+    const [validationErrors, setValidationErrors] = useState([]); //ошибки
     const navigate = useNavigate();
+
+    const normalizeProfileData = (data) => ({ //последствия кривого объявления, можно убрать и переделать, но пусть будет так
+        first_name: data.firstName || '',
+        second_name: data.secondName || '',
+        patronymic: data.patronymic || '',
+        faculty: data.faculty || '',
+        position: data.position || '',
+        bio: data.bio || '',
+        university: data.university || '',
+        city: data.city || '',
+        profile_image: data.profile_image || ''
+    });
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -38,7 +50,10 @@ const ProfileSetup = () => {
             if (response.ok) {
                 const data = await response.json();
                 setUserData(data);
-                setOriginalData(JSON.parse(JSON.stringify(data)));
+                //console.log('PROFILE DATA:', data);
+                const normalized = normalizeProfileData(data); //приводим данные к тому, что я криво объявил
+                setUserData(normalized);
+                setOriginalData(JSON.parse(JSON.stringify(normalized)));
                 setIsLoading(false);
             } else {
                 console.error('Ошибка при получении данных профиля');
@@ -47,9 +62,9 @@ const ProfileSetup = () => {
         fetchProfileData();
     }, []);
 
-    useEffect(() => {
-        return () => {
-            if (userData.profile_image?.startsWith?.('blob:')) {
+    useEffect(() => { // удаляем ссылки на картинки, которые пользователь заменил
+        return () => {     // т.е. например он загрузил картинку, ему не зашло и он загрузил другую
+            if (userData.profile_image?.startsWith?.('blob:')) { // вот мы и удаляем ссылку на предыдущую картинку
                 URL.revokeObjectURL(userData.profile_image);
             }
         };
@@ -63,22 +78,20 @@ const ProfileSetup = () => {
     const handleSave = async () => {
         //console.log("START");
 
-        const requiredFields = ['second_name', 'first_name', 'city', 'university', 'faculty', 'position'];
+        const requiredFields = ['second_name', 'first_name', 'city', 'university', 'faculty', 'position']; //обязательные поля
 
-        const emptyRequiredFields = requiredFields.filter(field => {
-            const newValue = userData[field]?.trim();
-            const oldValue = originalData[field]?.trim();
+        const emptyRequiredFields = requiredFields.filter(field => { // только для обязательных полей, добавляем значения которые true в конце этой небольшой функции
+            const newValue = userData[field]?.trim(); // берем старые значения
+            const oldValue = originalData[field]?.trim(); //новые значения
 
-            // Проверяем ТОЛЬКО если значение было изменено
-            const wasChanged = newValue !== oldValue;
+            const wasChanged = newValue !== oldValue; // проверяем изменилось ли поле
 
-            // Если поле изменено и стало пустым — ошибка
-            return wasChanged && newValue === '';
+            return wasChanged && newValue === ''; // если поле изменено и стало пустым, это ошибка
         });
 
-        if (emptyRequiredFields.length > 0) {
+        if (emptyRequiredFields.length > 0) { // если тут чет есть, значит ошибка
             setValidationErrors(emptyRequiredFields);
-            console.log("STOP");
+            //console.log("STOP");
             return;
         }
 
@@ -87,11 +100,11 @@ const ProfileSetup = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const hasTextChanges = Object.keys(userData).some(
+            const hasTextChanges = Object.keys(userData).some( // смотрим изменились ли значения
                 key => key !== 'profile_image' && userData[key] !== originalData[key]
             );
 
-            if (hasTextChanges) {
+            if (hasTextChanges) { //если да то отправляем запрос на изменение
                 //console.log("UPDATE USER TEXT DATA");
                 const profileResponse = await axios.put(`${API_URL}/api/profile`, userData, {
                     headers: {
@@ -111,7 +124,7 @@ const ProfileSetup = () => {
             //alert('Ошибка при сохранении профиля');
         }
 
-        if (avatarFile) {
+        if (avatarFile) {  // отдельный запрос для смены аватарки
             //console.log("UPDATE USER AVATAR");
             const formData = new FormData();
             formData.append('avatar', avatarFile);
@@ -138,7 +151,7 @@ const ProfileSetup = () => {
         if (!file) return;
 
         setAvatarFile(file);
-        const previewUrl = URL.createObjectURL(file);
+        const previewUrl = URL.createObjectURL(file); // устанавлием ту самую ссылку, которую потом в случае чего чистим через useEffect выше
         setUserData(prev => ({
             ...prev,
             profile_image: previewUrl
@@ -166,12 +179,12 @@ const ProfileSetup = () => {
                                 <div className="input-icon setup__input-wrapper">
 
                                     <input
-                                        type="email"
+                                        type="text"
                                         name="second_name"
-                                        value={userData.secondName}
+                                        value={userData.second_name}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"} // для красного обозначения обязательных полей
                                             /*required*/
                                     />
                                 </div>
@@ -181,12 +194,12 @@ const ProfileSetup = () => {
                                 Имя
                                 <div className="input-icon setup__input-wrapper">
                                     <input
-                                        type="email"
+                                        type="text"
                                         name="first_name"
-                                        value={userData.firstName}
+                                        value={userData.first_name}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('first_name') ? "input setup__input-error" : "input"}
                                     />
                                 </div>
                             </label>
@@ -210,7 +223,7 @@ const ProfileSetup = () => {
                                         value={userData.city}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('city') ? "input setup__input-error" : "input"}
                                     />
                                 </div>
                             </label>
@@ -223,7 +236,7 @@ const ProfileSetup = () => {
                                         value={userData.university}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('university') ? "input setup__input-error" : "input"}
                                     />
                                 </div>
                             </label>
@@ -236,7 +249,7 @@ const ProfileSetup = () => {
                                         value={userData.faculty}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('faculty') ? "input setup__input-error" : "input"}
                                     />
                                 </div>
                             </label>
@@ -249,7 +262,7 @@ const ProfileSetup = () => {
                                         value={userData.position}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('position') ? "input setup__input-error" : "input"}
                                     />
                                     {/*<span className={`required-hint ${validationErrors.includes('second_name') ? 'error' : ''}`}>
                                         Обязательное поле

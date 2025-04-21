@@ -36,7 +36,7 @@ const ProfileView = ({ user, onClose }) => {
 
     return (
         <div className="profile-view__backdrop">
-            <Draggable handle=".profile-view__header" nodeRef={nodeRef}>
+            <Draggable handle=".profile-view__header" nodeRef={nodeRef} bounds="parent">
                 <div className="profile-view" ref={nodeRef}>
 
                     <div className="profile-view__header">

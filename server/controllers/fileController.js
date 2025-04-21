@@ -76,11 +76,11 @@ const deleteFile = async (req, res) => { // удалить файлы если �
 
             files.forEach(file => { // удаляем каждый файл с диска(из папки сервера)
                 const filePath = file.filePath; //путь из бд
-                const fullFilePath = path.resolve(filePath);  //полный путь из компьютера + бд
+                const fullFilePath = path.resolve(__dirname, '..', filePath);  //полный путь из компьютера + бд
 
                 try {
                     fs.unlinkSync(fullFilePath);  //удаление
-                    console.log("DELETED FILE FULL FILE PATH:", fullFilePath);
+                    //console.log("DELETED FILE FULL FILE PATH:", fullFilePath);
                 } catch (err) {
                     console.error(`Error while delete file: ${fullFilePath}:`, err);
                 }
@@ -131,7 +131,7 @@ const downloadFile = async (req, res) => {
             return res.status(404).json({ message: 'файл не найден' });
         }
         //console.log("FILE PATH: ", file.filePath);
-        const filePath = path.resolve(file.filePath); //полный путь из компьютера + бд
+        const filePath = path.resolve(__dirname, '..', file.filePath); //полный путь из компьютера + бд
         //console.log("FULL FILE PATH: ", filePath);
         //console.log("FILE NAME: ", file.fileName);
 

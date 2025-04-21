@@ -51,7 +51,8 @@
     color: #2c2c2c;
 }
 
-.setup__input-error::placeholder {
+
+.input.setup__input-error::placeholder {
     color: #ff2727;
     margin: 0;
 }

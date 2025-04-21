@@ -2,7 +2,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const db = require('../db');
-const { User, UserProfile, Section } = require('../sequelize/models');
+const { User, UserProfile, Section, File } = require('../sequelize/models');
+const fs = require('fs');
+const path = require('path');
 
 
 const registerUser = async (req, res) => { //регистрация
@@ -19,18 +21,20 @@ const registerUser = async (req, res) => { //регистрация
         const newUser = await User.create({
             email,
             password: hashedPassword,
-        });
+        }, { returning: true }); // чтобы бд вернула id
+
+        //console.log("NEW USER ID:", newUser.id);
 
         await Section.bulkCreate([  // если пользователь зарегался, нужно сделать ему корневые папки.
             {
                 name: 'Themes',
                 parent_id: null,
-                user_id: newUser.id,
+                userId: newUser.id,
             },
             {
                 name: 'Tickets',
                 parent_id: null,
-                user_id: newUser.id,
+                userId: newUser.id,
             },
         ]);
 
@@ -92,7 +96,35 @@ const loginUser = async (req, res) => { //авторизация
     }
 };
 
+const deleteUsers = async (req, res) => {
+    const { userIds } = req.body;
+    console.log('USERS', userIds);
+
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ message: 'userIds должен быть массивом с хотя бы одним ID.' });
+    }
+
+    try {
+        for (const userId of userIds) {
+            const userFolder = path.resolve(__dirname, '..', 'uploads', `user_${userId}`); //путь к папке пользователя
+            if (fs.existsSync(userFolder)) {
+                fs.rmSync(userFolder, { recursive: true, force: true }); // удаление папки пользователя
+            }
+
+
+            await User.destroy({ //удаление всех записей из бд(каскадное удаление)
+                where: { id: userId },
+            });
+        }
+
+        return res.status(200).json({ message: 'Пользователи и их данные успешно удалены.' });
+    } catch (error) {
+        console.error('Ошибка при удалении пользователей:', error);
+        return res.status(500).json({ message: 'Ошибка сервера при удалении пользователей.' });
+    }
+};
 
 
 
-module.exports = { registerUser, loginUser };
+
+module.exports = { registerUser, loginUser, deleteUsers };
