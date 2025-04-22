@@ -374,6 +374,7 @@
 
 .ticket-creator__btn-group {
     display: flex;
+    gap: 20px;
 }
 
 .add-new-ques-type{
@@ -381,6 +382,25 @@
     border-radius: 8px;
 }
 
+.upload-new-file {
+    width: 39px;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.upload-new-file img {
+    width: 30px;
+    height: 30px;
+}
+
+.upload-new-file:hover {
+    background-color: transparent;
+}
 
 
 .ticket-creator__dropzone_row {
@@ -592,33 +612,33 @@
 }
 
 .resizer--right {
-    right: 0;
+    right: -2px;
     bottom: 0;
-    width: 2px;
+    width: 4px;
     height: 100%;
     cursor: ew-resize;
 }
 
 .resizer--bottom{
-    height: 2px;
+    height: 4px;
     cursor: ns-resize;
-    bottom: 0;
+    bottom: -2px;
     left: 0;
     right: 0;
 }
 
 .resizer--left{
-    width: 2px;
+    width: 4px;
     bottom: 0;
-    left: 0;
+    left: -2px;
     height: 100%;
     cursor: ew-resize;
 }
 
 .resizer--top {
-    height: 2px;
+    height: 4px;
     cursor: ns-resize;
-    top: 0;
+    top: -2px;
     left: 0;
     right: 0;
 }

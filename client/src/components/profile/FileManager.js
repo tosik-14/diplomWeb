@@ -763,26 +763,26 @@ const FileManager = ({ activeTab }) => {
     return (
         <div className="profile__folders">
             <div className="folder-structure__toolbar">
-                <button onClick={handleBack} className="toolbar-btn">
+                <button onClick={handleBack} className="toolbar-btn" title="Назад">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/back_arrow.svg`} alt="Back" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handleForward} className="toolbar-btn">
+                <button onClick={handleForward} className="toolbar-btn" title="Вперед">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/forward_arrow.svg`} alt="Forward" className="toolbar-btn__icon" draggable={false}/></button>
-                <div className="folder-path">
+                <div className="folder-path" title="Путь">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/path.svg`} alt="Forward" className="toolbar-btn__icon" draggable={false}/><p>{renderFolderPath()}</p>
                 </div>
-                <button onClick={handleCreateFolder} className="toolbar-btn">
+                <button onClick={handleCreateFolder} className="toolbar-btn" title="Создать папку">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/create.svg`} alt="Create" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handleDeleteItem} className="toolbar-btn">
+                <button onClick={handleDeleteItem} className="toolbar-btn" title="Удалить">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} alt="Delete" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handleRename} className="toolbar-btn">
+                <button onClick={handleRename} className="toolbar-btn" title="Переименовать">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/Rename.svg`} alt="Rename" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handleMoveItem} className="toolbar-btn">
+                <button onClick={handleMoveItem} className="toolbar-btn" title="Переместить">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/move.svg`} alt="Move" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handlePasteItem} className="toolbar-btn">
+                <button onClick={handlePasteItem} className="toolbar-btn" title="Вставить">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/paste.svg`} alt="Paste" className="toolbar-btn__icon" draggable={false}/></button>
-                <button onClick={handleUploadFile} className="toolbar-btn">
+                <button onClick={handleUploadFile} className="toolbar-btn" title="Загрузить">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} alt="Upload file" className="toolbar-btn__icon toolbar-icon-margin" draggable={false}/> Загрузить</button>
-                <button onClick={handleDownloadFile} className="toolbar-btn">
+                <button onClick={handleDownloadFile} className="toolbar-btn" title="Скачать">
                     <img src={`${PUBLIC_URL}/icons/toolbar_btn/download_file.svg`} alt="Download file" className="toolbar-btn__icon toolbar-icon-margin" draggable={false}/> Скачать</button>
 
 

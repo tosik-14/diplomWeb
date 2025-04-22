@@ -5,6 +5,9 @@ export const useCustomDraggable = ({ size, position, setPosition }) => {
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });//позиция старта
 
     const handleMouseDown = (e) => {
+        e.preventDefault(); //не позволит выделение по двойному клику
+        document.body.style.userSelect = 'none'; //отключаем выделение пока юзер таскает окно по экрану
+
         setDragging(true);
         setDragStart({
             x: e.clientX - position.x,
@@ -27,7 +30,10 @@ export const useCustomDraggable = ({ size, position, setPosition }) => {
         });
     };
 
-    const handleMouseUp = () => setDragging(false);
+    const handleMouseUp = () => {
+        document.body.style.userSelect = ''; //включаем выделение
+        setDragging(false);
+    };
 
     useEffect(() => {
         document.addEventListener("mousemove", handleMouseMove);

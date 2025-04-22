@@ -25,7 +25,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
     const [userName, setUserName] = useState(null); // ФИО юзера
 
     const [position, setPosition] = useState(null); // сначала null
-    const [size, setSize] = useState({ width: 900, height: 905 });
+    const [size, setSize] = useState({ width: 829, height: 600 });
     const [hasInitialized, setHasInitialized] = useState(false);
 
     useEffect(() => {
@@ -202,7 +202,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
             }
         }
 
-
+        onClose();
 
     }
 
@@ -539,6 +539,12 @@ const TicketCreator = ({ user, visible, onClose }) => {
                             </div>
 
                             <div className="ticket-creator__btn-group">
+                                <button
+                                    className="ticket-creator__double-btn upload-new-file"
+                                    onClick={handleAddType}
+                                >
+                                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} draggable={false} />
+                                </button>
                                 <button
                                     className="ticket-creator__double-btn add-new-ques-type"
                                     onClick={handleAddType}
