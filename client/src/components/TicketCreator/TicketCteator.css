@@ -383,19 +383,20 @@
 }
 
 .upload-new-file {
-    width: 39px;
+    width: 130px;
     height: 39px;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     background-color: transparent;
     border: none;
     outline: none;
 }
 
 .upload-new-file img {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
 }
 
 .upload-new-file:hover {
@@ -451,6 +452,15 @@
     background-color: #f9f9f9;
     border: 1px dashed #828282;
     box-sizing: border-box;
+    z-index: 1;
+}
+
+.ticket-creator__dropzone-container.toolbar-bottom .dropzone-questionsPerType {
+    left: 1px;  /*если дропзона становится слишком маленькой*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 110px;
 }
 
 .dropzone-questionsPerType input{
@@ -468,19 +478,41 @@
     color: black;
 }
 
-.delete-new-ques-type {
-    position: absolute;
-    right: 15px;
-    top: -20px;
-    background-color: #f9f9f9;
-    border: 1px dashed #828282;
 
+
+.file-group-toolbar{
+    position: absolute;
+    top: -20px;
+    right: 15px;
+    z-index: 1;
 }
 
-.delete-new-ques-type img {
+
+
+.ticket-creator__dropzone-container.toolbar-bottom .file-group-toolbar {
+    top: auto;
+    bottom: -20px;  /*если дропзона становится слишком маленькой*/
+    right: auto;
+    left: 15px;
+}
+
+.file-group-toolbar img {
     width: 22px;
     height: 22px;
 }
+
+.upload-new-file-into-one-group {
+    background-color: #f9f9f9;
+    border: 1px dashed #828282;
+}
+
+
+.delete-new-ques-type {
+    background-color: #f9f9f9;
+    border: 1px dashed #828282;
+    border-left: none;
+}
+
 
 
 

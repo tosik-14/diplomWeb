@@ -25,7 +25,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
     const [userName, setUserName] = useState(null); // ФИО юзера
 
     const [position, setPosition] = useState(null); // сначала null
-    const [size, setSize] = useState({ width: 829, height: 600 });
+    const [size, setSize] = useState({ width: 835, height: 600 });
     const [hasInitialized, setHasInitialized] = useState(false);
 
     useEffect(() => {
@@ -50,6 +50,11 @@ const TicketCreator = ({ user, visible, onClose }) => {
         }
     }, [hasInitialized, position, size]);
 
+    const nodeRef = useRef(null);
+    const fileZoneRefs = useRef([]); // массив ссылок на ДОМ элементы дропзоны, чтобы каждая кнопка загрузить отвечала за свою дропзону
+    const [isNarrow, setIsNarrow] = useState([]);//тру если дропзона меньше 216пх
+    const zoneRefs = useRef([]); //ссылки на дропзоны
+
     useEffect(() => { //изменение размера массива файлов вместе с изменением количества типов вопросов
         setDropZoneFiles((prev) => {
             const newFiles = [...prev];
@@ -64,11 +69,43 @@ const TicketCreator = ({ user, visible, onClose }) => {
 
             return newFiles;
         });
+
     }, [dropAreasCount]);
 
+    //спорное решение, но красота требует жертв
+    useEffect(() => { // ResizeObserver - браузерный api инструмент, отслеживает изменения размеров элемента на странице
+        const observer = new ResizeObserver((entries) => {//создаем новый экземпляр ResizeObserver, который будет реагировать на изменение размеров элементов
+            setIsNarrow((prev) => { // обновляем состояние isNarrow, в зависимости от ее ширины
+                const updated = [...prev]; // записываем предыдущее состояние, чтобы можно было изменить по индексам
+
+                entries.forEach((entry) => {
+
+                    const i = zoneRefs.current.findIndex((el) => el === entry.target);//находим индекс текущего элемента в массиве ссылок zoneRefs
+
+                    if (i !== -1) {
+
+                        updated[i] = entry.contentRect.width < 216;//проверяем ширину зоны, если она меньше 216пх, то ставим тру для дропзоны, типа она узкая
+                    }
+                });
+
+                return updated; // возвращаем обновлённый массив
+            });
+        });
+
+        zoneRefs.current.forEach((el) => {//подключаем ResizeObserver ко всем зонам, хранящимся в массиве ссылок
+            if (el) observer.observe(el); //подписываемся на изменение размеров дропзоны(начинаем следить)
+        });
+
+        return () => {//возвращаем функцию очистки, чтобы остановить наблюдение при закрытии страницы или изменении ссылок
+            zoneRefs.current.forEach((el) => {
+                if (el) observer.unobserve(el);// отписываемся от изменения размеров(перестаем следить)
+            });
+        };
+    }, [size.width, dropAreasCount]); //эффект повторно срабатывает при изменении ширины окна или количества дропзон
 
 
-    const nodeRef = useRef(null);
+
+
 
     const [fileError, setFileError] = useState(false);  // флаг ошибки
     const [fileErrorMessage, setFileErrorMessage] = useState(''); // текст ошибки, приходит из DropZone
@@ -109,6 +146,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
     const [approvalYear, setApprovalYear] = useState(year);//год утверждения билетов
 
     const [ticketProtocol, setTicketProtocol] = useState(1);//номер протокола
+
 
 
 
@@ -204,11 +242,20 @@ const TicketCreator = ({ user, visible, onClose }) => {
 
         onClose();
 
-    }
+    };
 
     const handleSetSeason = (season) => {
         setSeason(season);
-    }
+    };
+
+
+    useEffect(() => { //изменяем массив рефов в зависимости от числа дропзон
+        fileZoneRefs.current = Array(dropAreasCount).fill().map((_, i) => fileZoneRefs.current[i] || React.createRef());
+    }, [dropAreasCount]);
+
+    const handleUploadFile = (i) => {
+        fileZoneRefs.current[i]?.current?.openFileDialog(); //проводник будет отправлять файлы только в конкретную дропзону
+    };
 
 
     const handleFileUpload = async (file, areaIndex) => {  // если файл загружается с компьютера
@@ -539,12 +586,17 @@ const TicketCreator = ({ user, visible, onClose }) => {
                             </div>
 
                             <div className="ticket-creator__btn-group">
-                                <button
-                                    className="ticket-creator__double-btn upload-new-file"
-                                    onClick={handleAddType}
-                                >
-                                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} draggable={false} />
-                                </button>
+
+                                {questionsPerType.length === 1 && (
+                                    <button
+                                        className="ticket-creator__double-btn upload-new-file"
+                                        onClick={() => handleUploadFile(0)}
+                                    >
+                                        <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`}
+                                             draggable={false}/> Загрузить
+                                    </button>
+                                )}
+
                                 <button
                                     className="ticket-creator__double-btn add-new-ques-type"
                                     onClick={handleAddType}
@@ -571,9 +623,14 @@ const TicketCreator = ({ user, visible, onClose }) => {
 
                                     {[...Array(dropAreasCount)].map((_, i) => (
 
-                                        <div className={`ticket-creator__dropzone-container ${i === 0 ? 'first' : ''}`} key={i}>
+                                        <div
+                                            ref={(el) => zoneRefs.current[i] = el}
+                                            className={`ticket-creator__dropzone-container ${i === 0 ? 'first' : ''} ${isNarrow[i] ? 'toolbar-bottom' : ''}`}
+                                            key={i}
+                                        >
 
                                             <DropZone
+                                                ref={fileZoneRefs.current[i]} //у каждой дропзоны своя ссылка
                                                 key={i}
                                                 areaIndex={i}
                                                 isInternalDragging={false}
@@ -598,15 +655,25 @@ const TicketCreator = ({ user, visible, onClose }) => {
                                                         }}
                                                     />
                                                 </div>
+                                                <div className="file-group-toolbar">
+                                                    {questionsPerType.length > 1 && (
+                                                        <button
+                                                            className="upload-new-file-into-one-group"
+                                                            onClick={() => handleUploadFile(i)}
+                                                        >
+                                                            <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} draggable={false}/>
+                                                        </button>
+                                                    )}
+                                                    {questionsPerType.length > 1 && (
+                                                        <button
+                                                            className="delete-new-ques-type"
+                                                            onClick={() => handleRemoveType(i)}
+                                                        >
+                                                            <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} draggable={false} />
+                                                        </button>
+                                                    )}
+                                                </div>
 
-                                                {questionsPerType.length > 1 && (
-                                                    <button
-                                                        className="delete-new-ques-type"
-                                                        onClick={() => handleRemoveType(i)}
-                                                    >
-                                                        <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} draggable={false} />
-                                                    </button>
-                                                )}
                                                 <div className="ticket-creator__dropzone-multitype">
 
 

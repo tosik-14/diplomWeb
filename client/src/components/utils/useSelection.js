@@ -10,6 +10,8 @@ const useSelection = (folders, setLastSelectedFolder, files, setLastSelectedFile
     const [selectedAreaFiles, setSelectedAreaFiles] = useState([]);
 
     const handleMouseDown = (e) => {
+        //e.preventDefault(); //не позволит выделение по двойному клику
+        document.body.style.userSelect = 'none'; //отключаем выделение пока юзер таскает окно по экрану
         if (e.target.closest('.item')) return; // если тыкнули по самому файлу, то выделение не начинается. вдруг юзер хочет перетащить файл
 
         const container = e.target.closest('.folder-list'); // поиск контейнера .folder-list. Если пользователь тыкнет по папке
@@ -45,6 +47,7 @@ const useSelection = (folders, setLastSelectedFolder, files, setLastSelectedFile
     };
 
     const handleMouseUp = () => {
+        document.body.style.userSelect = ''; //включаем выделение
         if(!isSelecting) return;
         setLastSelectedFolder(null);
         setLastSelectedFile(null);
