@@ -9,23 +9,34 @@
 }
 
 .profile-view {
-    background: #fff;
+    background: var(--bg-color);
     border-radius: 23px;
     width: 725px;
     max-height: 90vh;
     overflow-y: auto;
-    padding: 0 20px 20px 20px;
+    //padding: 0 20px 20px 20px;
+    box-sizing: border-box;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     position: relative;
+    border: 1px solid var(--draggable-header-bg-color);
 }
 
 
 .profile-view__header {
-    height: 75px;
+    height: 50px;
+    width: 100%;
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
+    padding: 0 8px 0 40px;
+    box-sizing: border-box;
     align-items: center;
-    cursor: default;
+    cursor: grab;
+    background-color: var(--draggable-header-bg-color);
+}
+
+.profile-view__title {
+    color: #F5F5F5;
+    font-weight: 700;
 }
 
 .profile-view__close {
@@ -35,14 +46,14 @@
 }
 
 .profile-view__close img{
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
 }
 
 
 
 .profile-view__body {
-    margin: 0 50px 20px 50px;
+    margin: 20px 40px 15px 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -75,27 +86,33 @@
     align-items: center;
 }
 
+.profile-view__bio_label{
+    font-weight: 500;
+    color: var(--profile-view-label);
+}
+
 .profile-view__label {
     font-weight: 500;
     width: 220px; /* ширина для выравнивания */
-    color: #828282;
+    color: var(--profile-view-label);
 }
 
 .profile-view__value {
     flex: 1;
-    color: #000000;
+    color: var(--text-color);
 }
 
 .profile-view__name {
     font-weight: bold;
     font-size: 18px;
     margin-bottom: 5px;
+    color: var(--text-color);
 }
 
 .profile-view__bio {
     line-height: 1.5;
     margin-top: 8px;
-    color: #555;
+    color: var(--text-color);
 }
 
 .profile-view__buttons {
@@ -111,7 +128,7 @@
     flex-direction: row;
     justify-content: center;
     gap: 10px;
-    font-family: 'Montserrat', sans-serif;
+    /*font-family: 'Montserrat', sans-serif;*/
     padding: 8px 12px;
     cursor: pointer;
     width: 144px;
@@ -134,4 +151,8 @@
 
 .logout-btn {
     width: 110px;
+}
+
+.theme_toggle-btn {
+    width: 80px;
 }

@@ -19,7 +19,7 @@ export const createCustomDragPreview = (e, draggedFiles) => {
     dragPreview.style.fontFamily = 'Montserrat, sans-serif';
 
     const icon = document.createElement('img'); //втыкаем иконку со стилями
-    icon.src = `${process.env.PUBLIC_URL}/icons/DOCX.svg`;
+    icon.src = `${process.env.PUBLIC_URL}/icons/files_icons/DOCX.svg`;
     icon.style.width = '20px';
     icon.style.height = '20px';
     icon.style.flexShrink = '0';

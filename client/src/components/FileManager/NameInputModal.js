@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import './NameInputModal.css';
-import './../../styles/global.css';
+import '../../styles/global.css';
 
 const PUBLIC_URL = process.env.PUBLIC_URL;
 

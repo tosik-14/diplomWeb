@@ -2,7 +2,7 @@
     /*height: 100vh;*/
     min-height: 100vh;
     overflow-x: auto;
-    background-color: white;
+    background-color: var(--bg-color);
 }
 
 .admin-panel {
@@ -22,6 +22,9 @@
 .admin-panel__title {
     font-weight: 400;
     cursor: default;
+    color: var(--text-color);
+
+
 }
 
 .admin-panel__title span {
@@ -52,22 +55,23 @@
 }
 
 .admin-panel__btn {
-    font-family: 'Montserrat', sans-serif;
+    /*font-family: 'Montserrat', sans-serif;*/
     font-weight: 400;
     color: #000000;
-    background-color: #D9D9D9;
-    border: 1px solid #A6A6A6;
+    background-color: var(--tab-color);
+    border: 1px solid var(--tab-border-color);
     border-radius: 0;
     width: 150px;
     height: 50px;
     cursor: pointer;
+    color: var(--text-color);
 }
 
 .admin-panel__btn-icon{
     height: 50px;
     width: 50px;
-    background-color: #D9D9D9;
-    border: 1px solid #A6A6A6;
+    background-color: var(--tab-color);
+    border: 1px solid var(--tab-border-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,7 +110,7 @@
 }
 
 .admin-panel__row--header {
-    background-color: #f4f4f4;
+    background-color: var(--tab-color);
     font-weight: bold;
 }
 
@@ -115,11 +119,12 @@
     display: flex;
     align-items: center;
     padding-left: 5px;
-    border-right: 1px solid #9E9E9E;
+    border-right: 1px solid var(--tab-border-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: default;
+    color: var(--text-color);
 }
 
 .admin-panel__cell:first-child {
@@ -160,11 +165,11 @@
 
 
 .admin-panel__row-expanded {
-    background-color: #f9f9f9;
+    background-color: var(--tab-color);
     padding: 0px 0px;
     box-sizing: border-box;
     position: relative;
-    border-bottom: 1px solid #9E9E9E;
+    border-bottom: 1px solid var(--tab-border-color);
 }
 
 .admin-panel__expanded-wrapper {
@@ -207,6 +212,7 @@
 .admin-panel__expanded-col {
     display: flex;
     flex-direction: column;
+    color: var(--text-color);
 }
 
 

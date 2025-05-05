@@ -28,8 +28,8 @@
     align-items: center;
     cursor: default;
     font-weight: 700;
-    background-color: #0462A6;
-    color: #fff;
+    background-color: var(--draggable-header-bg-color);
+    color: #F5F5F5;
     flex-shrink: 0;
 }
 
@@ -76,13 +76,14 @@
     overflow: hidden;
 
 
-    background: #ffffff;
+    background: var(--tab-color);
     border-radius: 17px;
     box-shadow: 0 4px 30px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     position: relative;
-    border: 1px solid #0462A6;
+    border: 1px solid var(--draggable-header-bg-color);
+    color: var(--text-color);
 
     /*position: absolute;
     z-index: 999;*/
@@ -159,21 +160,24 @@
     box-sizing: border-box;
     height: 54px;
     border-radius: 20px;
-    border: 1px solid #828282;
+    border: 1px solid var(--tab-border-color);
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+    background-color: var(--tab-color);
 }
 
 .input-with-clear label{
     position: absolute;
     top: -11px;
     left: 25px;
-    background-color: #FFFFFF;
+    background-color: var(--tab-color);
+    color: var(--file-manager-item-text-color);
     padding: 0 5px;
-    color: #828282;
 }
 
 .input-with-clear input {
     width: 100%;
+    background-color: var(--tab-color);
+    color: var(--text-color);
 }
 
 .clear-button {
@@ -210,8 +214,10 @@
     outline: none;
     height: 54px;
     border-radius: 20px;
-    border: 1px solid #828282;
+    border: 1px solid var(--tab-border-color);
+    background-color: var(--tab-color);
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+    color: var(--text-color);
 }
 
 .input-small {
@@ -310,7 +316,7 @@
 }
 
 .ticket-creator__double-btn {
-    font-family: 'Montserrat', sans-serif;
+    /*font-family: 'Montserrat', sans-serif;*/
     font-weight: 550;
     padding: 5px 12px;
     border: none;
@@ -353,7 +359,7 @@
     flex-direction: column;
     gap: 15px;
     padding: 20px 15px 10px;
-    background: #f9f9f9;
+    background: var(--not-active-tab-color);
     border-radius: 12px;
 }
 
@@ -366,7 +372,7 @@
 }
 
 .dropzone-error-message {
-    color: red;
+    color: var(--red-alert);
     /*margin-top: 8px;*/
     /*font-family: Montserrat, sans-serif;*/
 }
@@ -392,9 +398,10 @@
     background-color: transparent;
     border: none;
     outline: none;
+    color: var(--text-color);
 }
 
-.upload-new-file img {
+.upload-new-file svg {
     width: 20px;
     height: 20px;
 }
@@ -449,8 +456,8 @@
     position: absolute;
     top: -20px;
     left: 15px;
-    background-color: #f9f9f9;
-    border: 1px dashed #828282;
+    background-color: var(--not-active-tab-color);
+    border: 1px dashed var(--tab-border-color);
     box-sizing: border-box;
     z-index: 1;
 }
@@ -466,7 +473,8 @@
 .dropzone-questionsPerType input{
     font-family: 'Montserrat', sans-serif;
     font-weight: 550;
-    background-color: #f9f9f9;
+    background-color: var(--not-active-tab-color);
+    color: var(--text-color);
     width: 25px;
     height: 25px;
     border: none;
@@ -475,7 +483,7 @@
 
 .dropzone-questionsPerType label{
     padding: 0 2px;
-    color: black;
+    color: var(--text-color);
 }
 
 
@@ -496,20 +504,22 @@
     left: 15px;
 }
 
-.file-group-toolbar img {
+.file-group-toolbar svg {
     width: 22px;
     height: 22px;
 }
 
 .upload-new-file-into-one-group {
-    background-color: #f9f9f9;
-    border: 1px dashed #828282;
+    background-color: var(--not-active-tab-color);
+    border: 1px dashed var(--tab-border-color);
 }
 
 
+
+
 .delete-new-ques-type {
-    background-color: #f9f9f9;
-    border: 1px dashed #828282;
+    background-color: var(--not-active-tab-color);
+    border: 1px dashed var(--tab-border-color);
     border-left: none;
 }
 
@@ -617,7 +627,7 @@
 
 
 .ticket-creator__generate-btn {
-    font-family: 'Montserrat', sans-serif;
+    /*font-family: 'Montserrat', sans-serif;*/
     font-weight: 550;
     width: 183px;
     height: 54px;
@@ -630,7 +640,7 @@
     align-items: center;
     width: 100%;
     position: absolute;
-    color: red;
+    color: var(--red-alert);
     font-weight: 400;
     top: -37px;
     left: 50%;

@@ -53,7 +53,7 @@ const HomePage = () => {
                                             <p className="step__small-text font-20">Загрузи список вопросов</p>
                                             <p className="step__big-text font-40">Загружай</p>
                                         </div>
-                                        <img src="/icons/DOCX.svg" alt="Иконка 1" className="step__icon" />
+                                        <img src="/icons/files_icons/DOCX.svg" alt="Иконка 1" className="step__icon" />
                                     </div>
                                 </div>
 

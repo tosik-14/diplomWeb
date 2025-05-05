@@ -2,11 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 /*import './Profile.css';*/
 import './FileManager.css';
 import '../../styles/global.css';
-import useSelection from '../utils/useSelection';
+import useSelection from '../../hooks/useSelection';
 import NameInputModal from './NameInputModal'; //ввод имени файла/папкуи
-import DropZone from '../utils/DropZone';
-import { createCustomDragPreview } from '../utils/dragPreview';
+import DropZone from '../../utils/DropZone';
+import { createCustomDragPreview } from '../../utils/dragPreview';
 import axios from "axios";
+import UploadIcon from '../icons/UploadIcon';
+import DeleteIcon from "../icons/DeleteIcon";
+import BackArrowIcon from "../icons/BackArrowIcon";
+import ForwardArrowIcon from "../icons/ForwardArrowIcon";
+import FolderPathIcon from "../icons/FolderPathIcon";
+import CreateIcon from "../icons/CreateIcon";
+import RenameIcon from "../icons/RenameIcon";
+import MoveItemIcon from "../icons/MoveItemIcon";
+import PasteItemIcon from "../icons/PasteItemIcon";
+import DownloadIcon from "../icons/DownloadIcon";
 import {data} from "react-router-dom";
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
@@ -41,6 +51,9 @@ const FileManager = ({ activeTab }) => {
     const [showNameModal, setShowNameModal] = useState(false); // индикатор окна ввода имени
     const [initialName, setInitialName] = useState(''); // старое имя файла.
     const [modalType, setModalType] = useState(null); // "rename" или "create" для переименования. Чтобы NameInputModal их различал
+
+
+
 
     useEffect(() => {
         const fetchFolders = async () => {
@@ -686,7 +699,7 @@ const FileManager = ({ activeTab }) => {
                                 className="item-icon"
                                 draggable={false}
                             />
-                            <div className="item-name">{folder.name}</div>
+                            <div className="item-name font-14">{folder.name}</div>
                         </div>
                     </div>
                 )
@@ -697,13 +710,13 @@ const FileManager = ({ activeTab }) => {
         const extension = fileName.split('.').pop().toLowerCase();
 
         const iconMap = {
-            docx: `${PUBLIC_URL}/icons/DOCX.svg`,
-            doc: `${PUBLIC_URL}/icons/DOC.svg`,
+            docx: `${PUBLIC_URL}/icons/files_icons/DOCX.svg`,
+            doc: `${PUBLIC_URL}/icons/files_icons/DOC.svg`,
             /*pdf: `${PUBLIC_URL}/icons/PDF.svg`,
             txt: `${PUBLIC_URL}/icons/TXT.svg`,*/  // на будущее мб
         };
 
-        return iconMap[extension] || `${PUBLIC_URL}/icons/unknown.svg`;
+        return iconMap[extension] || `${PUBLIC_URL}/icons/files_icons/unknown.svg`;
     };
 
     const renderFiles = (parentId) => {
@@ -754,7 +767,7 @@ const FileManager = ({ activeTab }) => {
                             draggable={false} //отключаем перетягивание самой иконки чтобы драгэндроп не пытался ее словить | upd: не помогло))
 
                         />
-                        <div className="item-name">{file.fileName}</div>
+                        <div className="item-name font-14">{file.fileName}</div>
                     </div>
                 )
             });
@@ -764,26 +777,41 @@ const FileManager = ({ activeTab }) => {
         <div className="profile__folders">
             <div className="folder-structure__toolbar">
                 <button onClick={handleBack} className="toolbar-btn" title="Назад">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/back_arrow.svg`} alt="Back" className="toolbar-btn__icon" draggable={false}/></button>
+                    <BackArrowIcon className="toolbar-btn__icon"/>
+                </button>
                 <button onClick={handleForward} className="toolbar-btn" title="Вперед">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/forward_arrow.svg`} alt="Forward" className="toolbar-btn__icon" draggable={false}/></button>
+                    <ForwardArrowIcon className="toolbar-btn__icon" draggable={false}/>
+                </button>
                 <div className="folder-path" title="Путь">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/path.svg`} alt="Forward" className="toolbar-btn__icon" draggable={false}/><p>{renderFolderPath()}</p>
+                    <FolderPathIcon alt="Forward" className="toolbar-btn__icon" draggable={false}/><p>{renderFolderPath()}</p>
                 </div>
                 <button onClick={handleCreateFolder} className="toolbar-btn" title="Создать папку">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/create.svg`} alt="Create" className="toolbar-btn__icon" draggable={false}/></button>
+                    <CreateIcon alt="Create" className="toolbar-btn__icon" draggable={false}/>
+                </button>
                 <button onClick={handleDeleteItem} className="toolbar-btn" title="Удалить">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} alt="Delete" className="toolbar-btn__icon" draggable={false}/></button>
+                    <DeleteIcon className="toolbar-btn__icon" />
+                </button>
                 <button onClick={handleRename} className="toolbar-btn" title="Переименовать">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/Rename.svg`} alt="Rename" className="toolbar-btn__icon" draggable={false}/></button>
+                    <RenameIcon alt="Rename" className="toolbar-btn__icon" draggable={false}/>
+                </button>
+
+
                 <button onClick={handleMoveItem} className="toolbar-btn" title="Переместить">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/move.svg`} alt="Move" className="toolbar-btn__icon" draggable={false}/></button>
+                    <MoveItemIcon alt="Move" className="toolbar-btn__icon" draggable={false}/>
+                </button>
+
                 <button onClick={handlePasteItem} className="toolbar-btn" title="Вставить">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/paste.svg`} alt="Paste" className="toolbar-btn__icon" draggable={false}/></button>
+                    <PasteItemIcon alt="Paste" className="toolbar-btn__icon" draggable={false}/>
+                </button>
+
                 <button onClick={handleUploadFile} className="toolbar-btn" title="Загрузить">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} alt="Upload file" className="toolbar-btn__icon toolbar-icon-margin" draggable={false}/> Загрузить</button>
+                    <UploadIcon className="toolbar-btn__icon toolbar-icon-margin" /> Загрузить
+                </button>
+
+
                 <button onClick={handleDownloadFile} className="toolbar-btn" title="Скачать">
-                    <img src={`${PUBLIC_URL}/icons/toolbar_btn/download_file.svg`} alt="Download file" className="toolbar-btn__icon toolbar-icon-margin" draggable={false}/> Скачать</button>
+                    <DownloadIcon className="toolbar-btn__icon toolbar-icon-margin" /> Скачать
+                </button>
 
 
                 <button onClick={handleTEST} className="toolbar-btn">   TEST   </button>

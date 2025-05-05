@@ -1,12 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
 //import Draggable from 'react-draggable';
-import DropZone from "../utils/DropZone";
+import DropZone from "../../utils/DropZone";
 import { useNavigate } from 'react-router-dom';
 import './TicketCteator.css';
 import './../../styles/global.css';
 import { startResize } from './ticketResizer'
-import { useCustomDraggable } from '../utils/useCustomDraggable';
+import { useCustomDraggable } from '../../hooks/useCustomDraggable';
 import { validateFile, validateFileFromStorage, createTickets } from './ticketApi'
+
+import UploadIcon from '../icons/UploadIcon';
+import DeleteIcon from "../icons/DeleteIcon";
 
 
 const PUBLIC_URL = process.env.PUBLIC_URL;
@@ -592,8 +595,8 @@ const TicketCreator = ({ user, visible, onClose }) => {
                                         className="ticket-creator__double-btn upload-new-file"
                                         onClick={() => handleUploadFile(0)}
                                     >
-                                        <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`}
-                                             draggable={false}/> Загрузить
+                                        {/*<img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`}
+                                             draggable={false}/>*/}<UploadIcon /> Загрузить
                                     </button>
                                 )}
 
@@ -661,7 +664,8 @@ const TicketCreator = ({ user, visible, onClose }) => {
                                                             className="upload-new-file-into-one-group"
                                                             onClick={() => handleUploadFile(i)}
                                                         >
-                                                            <img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} draggable={false}/>
+                                                            {/*<img src={`${PUBLIC_URL}/icons/toolbar_btn/upload_file.svg`} draggable={false}/>*/}
+                                                            <UploadIcon />
                                                         </button>
                                                     )}
                                                     {questionsPerType.length > 1 && (
@@ -669,7 +673,8 @@ const TicketCreator = ({ user, visible, onClose }) => {
                                                             className="delete-new-ques-type"
                                                             onClick={() => handleRemoveType(i)}
                                                         >
-                                                            <img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} draggable={false} />
+                                                            {/*<img src={`${PUBLIC_URL}/icons/toolbar_btn/Delete.svg`} draggable={false} />*/}
+                                                            <DeleteIcon />
                                                         </button>
                                                     )}
                                                 </div>
@@ -685,7 +690,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
                                                             <div className="dropzone-file-row" key={index}>
 
                                                                 <img
-                                                                    src={`${PUBLIC_URL}/icons/DOCX.svg`}
+                                                                    src={`${PUBLIC_URL}/icons/files_icons/DOCX.svg`}
                                                                     className="dropzone-file-icon"
                                                                     draggable={false} //отключаем перетягивание самой иконки
                                                                 />

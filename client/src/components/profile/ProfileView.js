@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import './ProfileView.css';
 import './../../styles/global.css';
+import ThemeToggle from "../../utils/ThemeToggle";
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
@@ -40,8 +41,12 @@ const ProfileView = ({ user, onClose }) => {
                 <div className="profile-view" ref={nodeRef}>
 
                     <div className="profile-view__header">
+                        <div className="profile-view__title font-20">
+                            Профиль
+                        </div>
+
                         <button onClick={onClose} className="profile-view__close">
-                            <img src={`${PUBLIC_URL}/icons/close.svg`} alt="close"/>
+                            <img src={`${PUBLIC_URL}/icons/close_white.svg`} alt="close"/>
                         </button>
                     </div>
 
@@ -94,11 +99,13 @@ const ProfileView = ({ user, onClose }) => {
 
                         </div>
 
-                        <div style={{ marginTop: '6px' }}>О себе:
+                        <div style={{ marginTop: '6px' }}>
+                            <div className="profile-view__bio_label">О себе:</div>
                             <div className="profile-view__bio">{user.bio}</div>
                         </div>
 
                         <div className="profile-view__buttons">
+                            <ThemeToggle />
                             <button onClick={handleLogOut} className="logout-btn profile-view__btn button_st font-16">Выйти</button>
                             {user.role === 'admin' && <button onClick={handleAdminPanel} className="profile-view__btn button_st font-16">Админ
                                 <img src={`${PUBLIC_URL}/icons/settings_white.svg`} alt="Админ панель"/></button>}

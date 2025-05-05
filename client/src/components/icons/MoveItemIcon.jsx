@@ -1,0 +1,17 @@
+const MoveItemIcon = ({ className }) => (
+    <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <g clip-path="url(#clip0_41_35)">
+            <path d="M317.5 453.267L94.4523 453.267C82.5394 451.777 58.7136 442.797 58.7136 418.793L58.7135 93.2069C59.7772 81.7157 68.414 58.7331 94.4522 58.7331L287.186 58.7331C298.886 60.4355 322.286 69.8413 322.286 93.8453L322.286 123C322.286 165.135 380.362 165.135 381 123L381 91.9301C378.447 61.2867 356.111 -3.11322e-05 287.186 -2.51066e-05L93.1758 -8.14569e-06C62.1172 1.70239 -4.27736e-05 22.7271 -3.66121e-05 93.2069L-8.14841e-06 418.793C1.70184 449.862 22.9749 512 94.4523 512L317.5 512C355.792 512 355.791 453.267 317.5 453.267Z" fill="var(--icon-secondary-color)"/>
+            <rect x="130" y="332.619" width="52" height="381" rx="26" transform="rotate(-90 130 332.619)" fill="var(--icon-primary-color)"/>
+            <rect x="395.948" y="432.44" width="52" height="177.977" rx="26" transform="rotate(-135 395.948 432.44)" fill="var(--icon-primary-color)"/>
+            <rect x="359" y="215.77" width="52" height="177.977" rx="26" transform="rotate(-45 359 215.77)" fill="var(--icon-primary-color)"/>
+        </g>
+        <defs>
+            <clipPath id="clip0_41_35">
+                <rect width="512" height="512" fill="white"/>
+            </clipPath>
+        </defs>
+    </svg>
+);
+
+export default MoveItemIcon;

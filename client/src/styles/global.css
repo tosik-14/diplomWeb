@@ -44,10 +44,69 @@ html, body, #root {  /*TEST*/
     overflow: auto;
 }
 
+
+
+:root {                      /*переменные для светлой темы*/
+    --body-bg: linear-gradient(30deg, #8ECC9F 15%, rgba(12, 140, 232, 0.44) 100%);
+    --bg-color: #F5F5F5;
+    --text-color: #000000;
+    --button-bg-color: #0462A6; /*#0C8CE8*/
+    --button-hover-color: #007BFF;
+
+    --tab-color: #F4F4F4;
+    --not-active-tab-color: #EAEAEA;
+    --active-tab-border-color: #3498DB;
+    --tab-border-color: #CCCCCC;
+
+    --file-manager-path-color: #282C34;
+    --file-manager-icon-primary: #0C8CE8;
+    --file-manager-icon-secondary: #000000;
+    --file-manager-btn-hover-color: #E3E3E3;
+    --file-manager-item-text-color: #666666;
+
+    --draggable-header-bg-color: #0462A6;
+
+    --profile-view-label: #646464;
+
+    --red-alert: #FF2727;
+
+    --icon-primary-color: #0C8CE8;
+    --icon-secondary-color: #000000;
+}
+                        /*linear-gradient(30deg, #1E1E2F 15%, rgba(0, 90, 150, 0.5) 100%)    тоже прикольный вариант для темной темы*/
+.dark {                      /*переменные для темной темы*/
+    --body-bg: linear-gradient(30deg, #2E4E3F 15%, rgba(12, 100, 180, 0.3) 100%);
+    --bg-color: #141414;
+    --text-color: #FFFFFF;
+    --button-bg-color: #12344C;
+    --button-hover-color: #0C2331;
+
+    --tab-color: #2F2F2F;
+    --not-active-tab-color: #212121;
+    --active-tab-border-color: #3498DB;
+    --tab-border-color: #707070;
+
+    --file-manager-path-color: #C9C9C9;
+    --file-manager-icon-primary: #6CB4F8;
+    --file-manager-icon-secondary: #F5F5F5;
+    --file-manager-btn-hover-color: #1C1C1C;
+    --file-manager-item-text-color: #a6a6a6;
+
+    --draggable-header-bg-color: #0C2331;  /*#0C2331*/
+
+    --profile-view-label: #9b9b9b;
+
+    --red-alert: #FF2727;
+
+    --icon-primary-color: #0C8CE8;
+    --icon-secondary-color: #F5F5F5;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(30deg, #8ECC9F 15%, rgba(12, 140, 232, 0.44) 100%);
-
+    /*background: linear-gradient(30deg, #8ECC9F 15%, rgba(12, 140, 232, 0.44) 100%);*/
+    /*background: linear-gradient(30deg, #2E4E3F 15%, rgba(12, 100, 180, 0.3) 100%);*/
+    background:  var(--body-bg);
     background-size: cover;
 }
 
@@ -81,21 +140,27 @@ a {
     margin: 0 auto;
 }
 
+button {
+    font-family: 'Montserrat', sans-serif;
+}
+
 .button_st {
-    background-color: #0C8CE8;
+    background-color: var(--button-bg-color);
     color: #F5F5F5;
     border: none;
     cursor: pointer;
 }
 
 .button_st:hover {
-    background-color: #007BFF;
+    background-color: var(--button-hover-color);
 }
 
 
 /*.input {
     color: black;
 }*/
+
+
 
 .input-icon {
     display: flex;

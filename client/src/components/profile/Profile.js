@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import '../../styles/global.css';
 import ProfileView from './ProfileView';
-import FileManager from "./FileManager";
+import FileManager from "../FileManager/FileManager";
 import TicketCreator from "../TicketCreator/TicketCreator";
 import { useLocation } from 'react-router-dom';
 const API_URL = process.env.REACT_APP_API_URL;

@@ -1,0 +1,18 @@
+const DeleteIcon = ({ className }) => (
+    <svg
+        width="512"
+        height="512"
+        viewBox="0 0 512 512"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+    >
+        <rect x="185.749" y="220.499" width="34.4998" height="194.249" rx="17.2499" fill="var(--icon-secondary-color)" stroke="var(--icon-secondary-color)"/>
+        <path d="M185.249 59.1403V77.9996H149.749V56.9216C149.749 17.4281 183.03 7.18489 199.671 7H311.717C352.542 7 362.748 41.0206 362.748 58.0309V77.9996H327.248V59.1403C327.248 46.2716 316.155 42.6847 310.608 42.4998H201.89C189.021 42.4998 185.434 53.5935 185.249 59.1403Z" fill="var(--icon-secondary-color)"/>
+        <rect x="292.249" y="220.499" width="34.4998" height="194.249" rx="17.2499" fill="var(--icon-secondary-color)" stroke="var(--icon-secondary-color)"/>
+        <rect x="45" y="97.4995" width="422.498" height="67.4998" rx="32" stroke="var(--icon-secondary-color)" stroke-width="32"/>
+        <path d="M128.671 455.185L98.7185 184.499L62.1094 181.726C68.3958 261.6 83.4092 429.669 93.1717 462.95C102.934 496.231 129.041 504.182 140.875 503.997H371.623C403.129 503.997 417.292 473.674 420.435 458.513L450.388 181.726L413.779 184.499C404.904 271.769 386.267 448.529 382.717 457.404C379.167 466.279 370.883 468.497 367.186 468.497H145.867C133.885 468.497 129.411 459.622 128.671 455.185Z" fill="var(--icon-secondary-color)"/>
+    </svg>
+);
+
+export default DeleteIcon;

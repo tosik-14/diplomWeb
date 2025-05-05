@@ -78,7 +78,7 @@
 .name-input__save {
     width: 150px;
     height: 54px;
-    font-family: 'Montserrat', sans-serif;
+    /*font-family: 'Montserrat', sans-serif;*/
     border: none;
     border-radius: 17px;
     padding: 8px;
