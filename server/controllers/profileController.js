@@ -48,15 +48,15 @@ const getUserProfile = async (req, res) => { // получаем данные п
 
 
 const updateUserProfile = async (req, res) => {
-    const { first_name, second_name, patronymic, faculty, position, bio, university, city} = req.body;
+    const { firstName, secondName, patronymic, faculty, position, bio, university, city} = req.body;
     const userId = req.user.userId; // айди юзера из authenticateToken
     //console.log("UPDATE USER PROFILE START");
     try {
         const profile = await UserProfile.findOne({ where: { userId } });
 
         if (profile) {
-            profile.first_name = first_name || profile.first_name;
-            profile.second_name = second_name || profile.second_name;
+            profile.first_name = firstName || profile.first_name;
+            profile.second_name = secondName || profile.second_name;
             profile.patronymic = patronymic || profile.patronymic;
             profile.faculty = faculty || profile.faculty;
             profile.position = position || profile.position;
@@ -68,8 +68,8 @@ const updateUserProfile = async (req, res) => {
         }else {
             await UserProfile.create({
                 userId: userId,
-                first_name: first_name,
-                second_name: second_name,
+                first_name: firstName,
+                second_name: secondName,
                 patronymic: patronymic,
                 faculty: faculty,
                 position: position,

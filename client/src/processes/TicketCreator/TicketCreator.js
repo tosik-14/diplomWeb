@@ -1,15 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
 //import Draggable from 'react-draggable';
-import DropZone from "../../utils/DropZone";
+import DropZone from "../../shared/lib/DropZone";
 import { useNavigate } from 'react-router-dom';
 import './TicketCteator.css';
-import './../../styles/global.css';
+import '../../shared/styles/global.css';
 import { startResize } from './ticketResizer'
-import { useCustomDraggable } from '../../hooks/useCustomDraggable';
+import { useCustomDraggable } from '../../shared/hooks/useCustomDraggable';
 import { validateFile, validateFileFromStorage, createTickets } from './ticketApi'
 
-import UploadIcon from '../icons/UploadIcon';
-import DeleteIcon from "../icons/DeleteIcon";
+import UploadIcon from '../../shared/icons/UploadIcon';
+import DeleteIcon from "../../shared/icons/DeleteIcon";
 
 
 const PUBLIC_URL = process.env.PUBLIC_URL;

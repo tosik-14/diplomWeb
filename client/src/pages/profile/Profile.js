@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Profile.css';
-import '../../styles/global.css';
-import ProfileView from './ProfileView';
-import FileManager from "../FileManager/FileManager";
-import TicketCreator from "../TicketCreator/TicketCreator";
+import '../../shared/styles/global.css';
+import ProfileView from '../../widgets/ProfileView/ProfileView';
+import FileManager from "../../widgets/FileManager/FileManager";
+import TicketCreator from "../../processes/TicketCreator/TicketCreator";
+import {createUser} from "../../entities/user/userModel";
 import { useLocation } from 'react-router-dom';
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
 const ProfilePage = () => {
+    const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState({});
 
@@ -38,7 +42,10 @@ const ProfilePage = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setUser(data);
+                const userEntity = createUser(data);
+                setUser(userEntity);
+
+                if(!userEntity.isComplete()) navigate('/profile-setup');
                 //console.log("PATRONYMIC", data.patronymic);
                 //console.log("USER DATA", data);
                 setIsLoading(true);

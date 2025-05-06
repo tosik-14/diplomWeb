@@ -3,8 +3,8 @@ import Draggable from 'react-draggable';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import './ProfileView.css';
-import './../../styles/global.css';
-import ThemeToggle from "../../utils/ThemeToggle";
+import '../../shared/styles/global.css';
+import ThemeToggle from "../../shared/ui/ThemeToggle";
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
@@ -105,7 +105,7 @@ const ProfileView = ({ user, onClose }) => {
                         </div>
 
                         <div className="profile-view__buttons">
-                            <ThemeToggle />
+                            <ThemeToggle className="button_st theme_toggle-btn profile-view__btn font-16"/>
                             <button onClick={handleLogOut} className="logout-btn profile-view__btn button_st font-16">Выйти</button>
                             {user.role === 'admin' && <button onClick={handleAdminPanel} className="profile-view__btn button_st font-16">Админ
                                 <img src={`${PUBLIC_URL}/icons/settings_white.svg`} alt="Админ панель"/></button>}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
-import '../../styles/global.css';
+import '../../shared/styles/global.css';
 const API_URL = process.env.REACT_APP_API_URL;
 
 const HomePage = () => {

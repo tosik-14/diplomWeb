@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import '../styles/global.css';
-import { ThemeContext } from "../context/ThemeContext";
+import { ThemeContext } from "../../context/ThemeContext";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ className }) {
     const { theme, toggleTheme } = useContext(ThemeContext);
 
     return (
-        <button onClick={toggleTheme} className="button_st theme_toggle-btn profile-view__btn font-16">
+        <button onClick={toggleTheme} className={className}>
             {theme === "light" ? "Dark" : "Light"}
         </button>
     );

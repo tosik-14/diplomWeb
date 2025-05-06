@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 /*import './Profile.css';*/
 import './FileManager.css';
-import '../../styles/global.css';
-import useSelection from '../../hooks/useSelection';
-import NameInputModal from './NameInputModal'; //ввод имени файла/папкуи
-import DropZone from '../../utils/DropZone';
-import { createCustomDragPreview } from '../../utils/dragPreview';
+import '../../shared/styles/global.css';
+import useSelection from '../../shared/hooks/useSelection';
+import NameInputModal from '../../shared/ui/NameInputModal'; //ввод имени файла/папкуи
+import DropZone from '../../shared/lib/DropZone';
+import { createCustomDragPreview } from '../../shared/lib/dragPreview';
 import axios from "axios";
-import UploadIcon from '../icons/UploadIcon';
-import DeleteIcon from "../icons/DeleteIcon";
-import BackArrowIcon from "../icons/BackArrowIcon";
-import ForwardArrowIcon from "../icons/ForwardArrowIcon";
-import FolderPathIcon from "../icons/FolderPathIcon";
-import CreateIcon from "../icons/CreateIcon";
-import RenameIcon from "../icons/RenameIcon";
-import MoveItemIcon from "../icons/MoveItemIcon";
-import PasteItemIcon from "../icons/PasteItemIcon";
-import DownloadIcon from "../icons/DownloadIcon";
+import UploadIcon from '../../shared/icons/UploadIcon';
+import DeleteIcon from "../../shared/icons/DeleteIcon";
+import BackArrowIcon from "../../shared/icons/BackArrowIcon";
+import ForwardArrowIcon from "../../shared/icons/ForwardArrowIcon";
+import FolderPathIcon from "../../shared/icons/FolderPathIcon";
+import CreateIcon from "../../shared/icons/CreateIcon";
+import RenameIcon from "../../shared/icons/RenameIcon";
+import MoveItemIcon from "../../shared/icons/MoveItemIcon";
+import PasteItemIcon from "../../shared/icons/PasteItemIcon";
+import DownloadIcon from "../../shared/icons/DownloadIcon";
 import {data} from "react-router-dom";
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;

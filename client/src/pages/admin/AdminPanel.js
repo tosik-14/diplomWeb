@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminPanel.css';
-import './../../styles/global.css';
+import '../../shared/styles/global.css';
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;

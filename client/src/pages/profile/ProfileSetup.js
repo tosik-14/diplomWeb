@@ -2,42 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ProfileSetup.css';
-import '../../styles/global.css';
+import '../../shared/styles/global.css';
+import { createUser } from "../../entities/user/userModel";
+
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
 
 
 const ProfileSetup = () => {
-    const [userData, setUserData] = useState({ // данные юзера
-        first_name: '',
-        second_name: '',
-        patronymic: '',
-        faculty: '',
-        position: '',
-        bio: '',
-        university: '',
-        city: '',
-        profile_image: ''
-    });
+    const [userData, setUserData] = useState(createUser({}));
+    const [originalData, setOriginalData] = useState(null); // его текущие данные
+
     const [isLoading, setIsLoading] = useState(true); //флаг загрузки страницы
     const fileInputRef = useRef(null); //референс на DOM элемент, что я мог на картинку накинуть невидимы input file
     const [avatarFile, setAvatarFile] = useState(null); // тут картинка аватарки будет, если пользователь станет менять
-    const [originalData, setOriginalData] = useState(null); // его текущие данные
     const [validationErrors, setValidationErrors] = useState([]); //ошибки
     const navigate = useNavigate();
-
-    const normalizeProfileData = (data) => ({ //последствия кривого объявления, можно убрать и переделать, но пусть будет так
-        first_name: data.firstName || '',
-        second_name: data.secondName || '',
-        patronymic: data.patronymic || '',
-        faculty: data.faculty || '',
-        position: data.position || '',
-        bio: data.bio || '',
-        university: data.university || '',
-        city: data.city || '',
-        profile_image: data.profile_image || ''
-    });
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -49,11 +30,11 @@ const ProfileSetup = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setUserData(data);
-                //console.log('PROFILE DATA:', data);
-                const normalized = normalizeProfileData(data); //приводим данные к тому, что я криво объявил
-                setUserData(normalized);
-                setOriginalData(JSON.parse(JSON.stringify(normalized)));
+
+                const userEntity = createUser(data);
+                setUserData(userEntity);
+                setOriginalData(JSON.parse(JSON.stringify(userEntity)));
+
                 setIsLoading(false);
             } else {
                 console.error('Ошибка при получении данных профиля');
@@ -78,7 +59,7 @@ const ProfileSetup = () => {
     const handleSave = async () => {
         //console.log("START");
 
-        const requiredFields = ['second_name', 'first_name', 'city', 'university', 'faculty', 'position']; //обязательные поля
+        const requiredFields = ['secondName', 'firstName', 'city', 'university', 'faculty', 'position']; //обязательные поля
 
         const emptyRequiredFields = requiredFields.filter(field => { // только для обязательных полей, добавляем значения которые true в конце этой небольшой функции
             const newValue = userData[field]?.trim(); // берем старые значения
@@ -180,11 +161,11 @@ const ProfileSetup = () => {
 
                                     <input
                                         type="text"
-                                        name="second_name"
-                                        value={userData.second_name}
+                                        name="secondName"
+                                        value={userData.secondName}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('second_name') ? "input setup__input-error" : "input"} // для красного обозначения обязательных полей
+                                        className={validationErrors.includes('secondName') ? "input setup__input-error" : "input"} // для красного обозначения обязательных полей
                                             /*required*/
                                     />
                                 </div>
@@ -195,11 +176,11 @@ const ProfileSetup = () => {
                                 <div className="input-icon setup__input-wrapper">
                                     <input
                                         type="text"
-                                        name="first_name"
-                                        value={userData.first_name}
+                                        name="firstName"
+                                        value={userData.firstName}
                                         onChange={handleChange}
                                         placeholder="Обязательное поле"
-                                        className={validationErrors.includes('first_name') ? "input setup__input-error" : "input"}
+                                        className={validationErrors.includes('firstName') ? "input setup__input-error" : "input"}
                                     />
                                 </div>
                             </label>

@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RegistrationForm from './components/auth/RegistrationForm';
-import LoginForm from './components/auth/LoginForm';
-import HomePage from './components/auth/HomePage';
-import Profile from './components/profile/Profile';
-import ProfileSetup from './components/profile/ProfileSetup';
-import AdminPanel from "./components/admin/AdminPanel";
+import RegistrationForm from '../pages/auth/RegistrationForm';
+import LoginForm from '../pages/auth/LoginForm';
+import HomePage from '../pages/homepages/HomePage';
+import Profile from '../pages/profile/Profile';
+import ProfileSetup from '../pages/profile/ProfileSetup';
+import AdminPanel from "../pages/admin/AdminPanel";
 
 function App() {
     return (
