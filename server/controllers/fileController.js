@@ -1,13 +1,16 @@
-const { File, Section} = require('../sequelize/models');
+const { File, Folder} = require('../sequelize/models');
 const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
 
 
-const getFilesBySection = async (req, res) => { // получение всех файлов, которые находятся в parentId папке
+const getFilesByFolder = async (req, res) => { // получение всех файлов, которые находятся в parentId папке
         try {
             const { parentId } = req.query;
-            const files = await File.findAll({ where: { section_id: parentId } });
+            const files = await File.findAll({
+                where: { folder_id: parentId },
+                attributes: ['id', 'fileName', 'folderId', 'uploaded_at', 'user_id']
+            });
             res.json(files);
         } catch (error) {
             console.error('ERROR while GET file: ', error);
@@ -18,7 +21,7 @@ const getFilesBySection = async (req, res) => { // получение всех �
 
 const uploadFile = async (req, res) => { // загрузить файл
     try {
-        const { sectionId } = req.body;
+        const { folderId } = req.body;
         const file = req.file;
         const userId = req.user.userId;
 
@@ -32,7 +35,7 @@ const uploadFile = async (req, res) => { // загрузить файл
         const existingFile = await File.findOne({ // проверка существует ли уже такой файл
             where: {
                 fileName: cleanFileName, //проверяем по логическому имени. из папки сервера имена не отображаются и они всегда уникальны
-                sectionId: sectionId,      // проверяем файлы с одним sectionId
+                folderId: folderId,      // проверяем файлы с одним folderId
                 userId: userId,            // проверяем по userId на всякий
             }
         });
@@ -47,7 +50,7 @@ const uploadFile = async (req, res) => { // загрузить файл
         const newFile = await File.create({
             fileName: cleanFileName,
             filePath: normalizedPath,
-            sectionId: sectionId,
+            folderId: folderId,
             userId: userId,
         });
 
@@ -180,7 +183,7 @@ const downloadArchiveFile = async (req, res) => { // скачивание нес
 
 
 module.exports = {
-    getFilesBySection,
+    getFilesByFolder,
     uploadFile,
     deleteFile,
     renameFile,

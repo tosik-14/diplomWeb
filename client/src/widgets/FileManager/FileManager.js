@@ -149,6 +149,7 @@ const FileManager = ({ activeTab }) => {
                     const uniqueFiles = data.filter(file => !existingIds.has(file.id));  // добавляем в file тока новые id
                     return [...prevFiles, ...uniqueFiles];
                 });
+                //console.log("FETCH FILES", data);
             } else {
                 console.error('не удалось получить файлы');
             }
@@ -399,15 +400,6 @@ const FileManager = ({ activeTab }) => {
 
     const renameItem = async (newName) => {
         const token = localStorage.getItem('token');
-
-        /*if (!lastSelectedFolder && !lastSelectedFile) {
-            alert("выберите, что хотите переименовать");
-            return;
-        }
-
-        const newName = prompt("введите имя");
-        if (!newName) return;*/
-
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
@@ -472,13 +464,13 @@ const FileManager = ({ activeTab }) => {
     };
 
     const handleFileUpload = async (file) => {
-        console.log("FILE TO UPLOAD:", file);
+        //console.log("FILE TO UPLOAD:", file);
         const token = localStorage.getItem('token');
         const parent_Id = pathTo?.length ? pathTo[pathTo.length - 1] : getRootFolderId();
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('sectionId', parent_Id);
+        formData.append('folderId', parent_Id);
         //console.log("FORM DATA:", formData.file);
         try {
             const response = await axios.post(`${API_URL}/api/file`, formData, {
@@ -488,11 +480,12 @@ const FileManager = ({ activeTab }) => {
                 },
             })
                 .then(response => {
+                    //console.log("FILE IN RESPONSE.DATA: ", response.data)
                     setFiles((prevFiles) => [...prevFiles, response.data]);
 
 
                     handleFolderClick(parent_Id);
-
+                    //fetchFiles(parent_Id);
                     //console.log("NEW FOLDER IN THE END:", folders);
                 })
                 .catch(error => {
@@ -722,7 +715,7 @@ const FileManager = ({ activeTab }) => {
     const renderFiles = (parentId) => {
 
         return files
-            .filter(file => file.sectionId === currentFolderId)
+            .filter(file => file.folderId === currentFolderId)
             .map(file => {
                 let fileClass = 'item';
                 if (Array.isArray(selectedAreaFiles) && selectedAreaFiles.includes(file.id)) {

@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const db = require('../db');
-const { User, UserProfile, Section, File } = require('../sequelize/models');
+const { User, UserProfile, Folder, File } = require('../sequelize/models');
 const fs = require('fs');
 const path = require('path');
 
@@ -25,7 +25,7 @@ const registerUser = async (req, res) => { //регистрация
 
         //console.log("NEW USER ID:", newUser.id);
 
-        await Section.bulkCreate([  // если пользователь зарегался, нужно сделать ему корневые папки.
+        await Folder.bulkCreate([  // если пользователь зарегался, нужно сделать ему корневые папки.
             {
                 name: 'Themes',
                 parent_id: null,

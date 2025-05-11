@@ -1,5 +1,5 @@
 //const db = require('../db');
-const { Section, File } = require('../sequelize/models'); // Импортируем модель Section
+const { Folder, File } = require('../sequelize/models');
 const authenticateToken = require('../middleware/authenticateToken');
 const {as} = require("pg-promise");
 const fs = require('fs');
@@ -22,7 +22,7 @@ const getUserFolders = async (req, res) => { // получение папок п
             queryOptions.where.parent_id = parentId; // Получение дочерних папок
         }
 
-        const folders = await Section.findAll(queryOptions); //запрашиваем папки
+        const folders = await Folder.findAll(queryOptions); //запрашиваем папки
         //console.log("FOLDERS: ", folders);
         res.json(folders); //ответ
 
@@ -45,7 +45,7 @@ const createFolder = async (req, res) => {
     }
 
     try {
-        const existingFolder = await Section.findOne({ //проверяем чтобы в этой папке не было таких же папок
+        const existingFolder = await Folder.findOne({ //проверяем чтобы в этой папке не было таких же папок
             where: {
                 name,
                 parentId: parentId || null,
@@ -57,7 +57,7 @@ const createFolder = async (req, res) => {
             return res.status(400).json({ message: 'папка с таким именем уже существует' });
         }
 
-        const newFolder = await Section.create({ //создание папки
+        const newFolder = await Folder.create({ //создание папки
             name,
             parentId: parentId || null,
             userId,
@@ -86,7 +86,7 @@ const renameFolder = async (req, res) => { // переименовать пап�
         return res.status(400).json({ message: 'пустое название папки' });
     }
     try {
-        const existingFolder = await Section.findOne({ //проверяем чтобы в этой папке не было таких же папок
+        const existingFolder = await Folder.findOne({ //проверяем чтобы в этой папке не было таких же папок
             where: {
                 name: newFolderName,
                 parentId: parentId || null,  // вообще parentId не может не быть, но на всякий
@@ -97,7 +97,7 @@ const renameFolder = async (req, res) => { // переименовать пап�
             return res.status(400).json({ message: 'папка с таким именем уже существует' });
         }
 
-        await Section.update(   //обновляем название
+        await Folder.update(   //обновляем название
             { name: newFolderName },
             { where: { id: folderId } }
         );
@@ -121,15 +121,15 @@ const moveItems = async (req, res) => { // перемещение папок и 
             }
         }
 
-        if (fileIds.length > 0) { //обновляем sectionId для файлов при перемещении
+        if (fileIds.length > 0) { //обновляем folderId для файлов при перемещении
             await File.update(
-                { sectionId: targetFolderId },
+                { folderId: targetFolderId },
                 { where: { id: fileIds } }
             );
         }
 
         if (folderIds.length > 0) { //обновляем parentId для папок при перемещении
-            await Section.update(
+            await Folder.update(
                 { parentId: targetFolderId },
                 { where: { id: folderIds } }
             );
@@ -149,7 +149,7 @@ const getAllNestedFolderIds = async (initialIds) => { // тут рекурсив
     const result = new Set(initialIds);               // и еще эта функция импользуется в moveItems выше
 
     const findChildren = async (parentIds) => { // поиск дочерних папок
-        const children = await Section.findAll({
+        const children = await Folder.findAll({
             where: { parentId: parentIds },
             attributes: ['id']
         });
@@ -170,7 +170,7 @@ const getAllNestedFolderIds = async (initialIds) => { // тут рекурсив
 const getAllFilesByFolderIds = async (folderIds) => {  //здесь возвращаются файлы внутри удаляемой папки/папок
     return await File.findAll({
         where: {
-            sectionId: folderIds
+            folderId: folderIds
         },
         attributes: ['filePath']
     });
@@ -205,7 +205,7 @@ const deleteFolder = async (req, res) => {
         if (files.length > 0) deleteFilesFromDisk(files); // удаляем файлы, ну если есть что удалять конечно
         // цирк с конями, но по другому никак по сути, только если хранить файлы в самой бд, но это может вызвать
         // трудности с нагрузкой на бд, ведь файлы вес имеют
-        await Section.destroy({ // удаление папки в бд. Всё остальное в бд удаляется каскадно
+        await Folder.destroy({ // удаление папки в бд. Всё остальное в бд удаляется каскадно
             where: {
                 id: folderIds,
             },

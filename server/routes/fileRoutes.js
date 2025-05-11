@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const authenticateToken = require('../middleware/authenticateToken');
-const { uploadFile, getFilesBySection, deleteFile, renameFile, downloadFile, downloadArchiveFile } = require('../controllers/fileController');
+const { uploadFile, getFilesByFolder, deleteFile, renameFile, downloadFile, downloadArchiveFile } = require('../controllers/fileController');
 const upload = require('../middleware/upload');
 
-router.get('/file', authenticateToken, getFilesBySection);
+router.get('/file', authenticateToken, getFilesByFolder);
 
 router.post('/file', authenticateToken, upload.single('file'), uploadFile);
 

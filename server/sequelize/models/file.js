@@ -1,4 +1,3 @@
-// models/file.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
@@ -8,10 +7,11 @@ const File = sequelize.define('File', {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
     },
-    sectionId: {
+    folderId: {
         type: DataTypes.UUID,
+        field: 'folder_id',
         references: {
-            model: 'sections', //папка в которой файл находится в этой таблице
+            model: 'folders', //папка в которой файл находится в этой таблице
             key: 'id',
         },
         onDelete: 'CASCADE',

@@ -1,9 +1,9 @@
-// models/section.js
+// models/folder.js
 const { DataTypes } = require('sequelize');
 const File = require('./file');
 const sequelize = require('../config/sequelize');
 
-const Section = sequelize.define('Section', {
+const Folder = sequelize.define('Folder', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -24,7 +24,7 @@ const Section = sequelize.define('Section', {
     parentId: {
         type: DataTypes.UUID,
         references: {
-            model: 'sections',
+            model: 'folders',
             key: 'id',
         },
         onDelete: 'SET NULL',
@@ -34,30 +34,30 @@ const Section = sequelize.define('Section', {
         defaultValue: DataTypes.NOW,
     },
 }, {
-    tableName: 'sections',  //название таблицы в бд
+    tableName: 'folders',  //название таблицы в бд
     timestamps: false,
 });
 
-Section.hasMany(Section, { //Section имеет много Section, связаны по parent_id. Это для каскадного удаления
+Folder.hasMany(Folder, { //Folder имеет много Folder, связаны по parent_id. Это для каскадного удаления
     foreignKey: 'parent_id',
     as: 'subfolders',
     onDelete: 'CASCADE',
 });
 
-Section.belongsTo(Section, {
+Folder.belongsTo(Folder, {
     foreignKey: 'parent_id',
     as: 'parentFolder',
 });
 
-Section.hasMany(File, { //Section имеет много File, связаны по sectionId. Это для каскадного удаления
-    foreignKey: 'sectionId',
+Folder.hasMany(File, { //Folder имеет много File, связаны по sectionId. Это для каскадного удаления
+    foreignKey: 'folderId',
     as: 'files',
     onDelete: 'CASCADE',
 });
 
-File.belongsTo(Section, {
-    foreignKey: 'sectionId',
-    as: 'section',
+File.belongsTo(Folder, {
+    foreignKey: 'folderId',
+    as: 'folder',
 });
 
-module.exports = Section;
+module.exports = Folder;
