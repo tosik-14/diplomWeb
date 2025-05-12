@@ -34,7 +34,7 @@ const uploadFile = async (req, res) => { // загрузить файл
 
         /*const existingFile = await File.findOne({ // проверка существует ли уже такой файл
             where: {
-                fileName: cleanFileName, //проверяем по логическому имени. из папки сервера имена не отображаются и они всегда уникальны
+                fileName: cleanFileName,   //проверяем по логическому имени. из папки сервера имена не отображаются и они всегда уникальны
                 folderId: folderId,      // проверяем файлы с одним folderId
                 userId: userId,            // проверяем по userId на всякий
             }

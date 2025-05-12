@@ -423,7 +423,7 @@ const generateTicketsDOCX = async ({
 const { File, Folder } = require('../sequelize/models');
 
 async function saveTicketFileToDb({ userId, uniqueFileName, filePath }) { //сохраение записи с о файле с билетами в бд
-    const rootTicketsFolder = await Folder.findOne({ // ищем корневую папку Tickets пользователя
+    const rootTicketsFolder = await Folder.findOne({  // ищем корневую папку Tickets пользователя
         where: {
             name: 'Tickets',
             parentId: null,
