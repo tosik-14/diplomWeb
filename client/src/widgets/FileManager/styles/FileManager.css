@@ -147,7 +147,7 @@
     height: 20px;
 }
 
-.folder-path p {
+.folder-path span { /*чтобы конечная часть пути всегда была видна(строка как-бы сдвигается влево)*/
     color: var(--file-manager-path-color);
     margin: 0;
     padding: 0;
@@ -230,63 +230,12 @@
 
 
 
-.selected-folder {
-    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);*/
-    box-sizing: border-box;
-    background-color: rgba(0, 123, 255, 0.1);
-    border-radius: 4%;
-}
-
-.last-selected {
-    border: 1px solid rgba(128, 179, 255, 0.68);
-    box-sizing: border-box;
-    background-color: rgba(0, 123, 255, 0.1);
-    /*box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);*/
-    border-radius: 4%;
-}
-
-/*.folder-item.selected {
-    border: 2px solid #007bff;  !* Рамка синим цветом *!
-    box-sizing: border-box;
-    background-color: rgba(0, 123, 255, 0.1);  !* Легкий фон *!
-}*/
-
-.selection-box {
-    position: absolute;
-    border: 1px solid #007bff;
-    background-color: rgba(0, 123, 255, 0.2);
-    /*background-color: rgba(255, 0, 0, 0.2);*/
-    pointer-events: none;
-    z-index: 10;
-}
-
 /*|||||||||||||||||||||||||||||||||| DROP ZONE |||||||||||||||||||||||||||||*/
-
-.drop-zone {
-    display: flex;
-    border: 2px dashed transparent;
-    border-radius: 5px;
-    /*padding: 40px;*/
-    text-align: center;
-    /*color: #666;*/
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    flex-grow: 1;
-    /*height: 100%;*/
-    overflow: visible;
-    position: relative;
-}
-
-.drop-zone.dragging {
-    background-color: rgba(0, 120, 255, 0.1);
-    border: 2px dashed #0078ff;
-    color: #0078ff;
-}
-
+/*
 .drop-zone-text {
     font-size: 16px;
 }
-
+*/
 .file-manager-dropzone-error-message{
     color: red;
     position: absolute;

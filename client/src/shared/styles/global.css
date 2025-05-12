@@ -70,6 +70,11 @@ html, body, #root {  /*TEST*/
 
     --red-alert: #FF2727;
 
+    --selectedItems: rgba(0, 123, 255, 0.1);
+    --lastSelected-border-clr: rgba(128, 179, 255, 0.68);
+    --selectedArea-bg-clr: rgba(0, 123, 255, 0.2);
+    --selectedArea-border-clr: #007BFF;
+
     --icon-primary-color: #0C8CE8;
     --icon-secondary-color: #000000;
 }
@@ -97,6 +102,11 @@ html, body, #root {  /*TEST*/
     --profile-view-label: #9b9b9b;
 
     --red-alert: #FF2727;
+
+    --selectedItems: rgba(234, 234, 255, 0.1);
+    --lastSelected-border-clr: rgba(232, 241, 255, 0.68);
+    --selectedArea-bg-clr: rgba(234, 234, 255, 0.2);
+    --selectedArea-border-clr: #e5f1ff;
 
     --icon-primary-color: #0C8CE8;
     --icon-secondary-color: #F5F5F5;

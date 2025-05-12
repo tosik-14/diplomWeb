@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 //import Draggable from 'react-draggable';
-import DropZone from "../../shared/lib/DropZone";
+import DropZone from "../../shared/lib/DropZone/DropZone";
 import { useNavigate } from 'react-router-dom';
 import './TicketCteator.css';
 import '../../shared/styles/global.css';

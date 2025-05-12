@@ -1,5 +1,5 @@
-import { createFile } from '../../entities/FileManagerItems/fileModel';
-import { createFolder } from '../../entities/FileManagerItems/folderModel';
+import { createFile } from '../../../entities/FileManagerItems/fileModel';
+import { createFolder } from '../../../entities/FileManagerItems/folderModel';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL;

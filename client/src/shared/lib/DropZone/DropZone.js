@@ -1,5 +1,6 @@
 // DropZone.js
 import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import styles from './DropZone.module.css';
 
 const DropZone = forwardRef(({ onFileUpload, onServerFileDrop, areaIndex, children, isInternalDragging, onFileError }, ref) => {
     const fileInputRef = useRef(null);
@@ -125,7 +126,7 @@ const DropZone = forwardRef(({ onFileUpload, onServerFileDrop, areaIndex, childr
 
     return (
         <div
-            className={`drop-zone ${isDragging && !isInternalDragging.current ? 'dragging' : ''}`} // визуально не отображаем область если юзер таскает файл внутри зоны
+            className={`${styles.dropZone} ${isDragging && !isInternalDragging.current ? styles.dragging : ''}`} // визуально не отображаем область если юзер таскает файл внутри зоны
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}

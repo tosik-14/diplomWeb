@@ -1,58 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import './FileManager.css';
-import '../../shared/styles/global.css';
-import useSelection from '../../shared/hooks/useSelection';
-import NameInputModal from '../../shared/ui/NameInputModal'; //ввод имени файла/папкуи
-import DropZone from '../../shared/lib/DropZone';
-import { createCustomDragPreview } from '../../shared/lib/dragPreview';
+import { fetchFolders, fetchFilesInFolder } from '../api/fileManagerApi';
+import { apiCreateFolder, renameFolder, deleteFolders, moveItems } from '../api/fileManagerFolderApi';
+import { renameFile, deleteFiles, uploadFile, downloadSingleFile, downloadArchive } from '../api/fileManagerFileApi';
 
-import UploadIcon from '../../shared/icons/UploadIcon';
-import DeleteIcon from "../../shared/icons/DeleteIcon";
-import BackArrowIcon from "../../shared/icons/BackArrowIcon";
-import ForwardArrowIcon from "../../shared/icons/ForwardArrowIcon";
-import FolderPathIcon from "../../shared/icons/FolderPathIcon";
-import CreateIcon from "../../shared/icons/CreateIcon";
-import RenameIcon from "../../shared/icons/RenameIcon";
-import MoveItemIcon from "../../shared/icons/MoveItemIcon";
-import PasteItemIcon from "../../shared/icons/PasteItemIcon";
-import DownloadIcon from "../../shared/icons/DownloadIcon";
+export const useFileManager = ({
+                                   activeTab,
+                                   getRootFolderId,
+                                   setShowNameModal,
+                                   lastSelectedFolder, setLastSelectedFolder,
+                                   lastSelectedFile, setLastSelectedFile,
+                                   selectedAreaFolders, setSelectedAreaFolders, selectedAreaFiles, setSelectedAreaFiles,
+                                   folders, setFolders,
+                                   files, setFiles,
+                                   dropZoneRef,
+                               }) => {
 
-import { fetchFolders, fetchFilesInFolder } from '../../shared/api/fileManagerApi';
-import { apiCreateFolder, renameFolder, deleteFolders, moveItems } from './api/fileManagerFolderApi';
-import { renameFile, deleteFiles, uploadFile, downloadSingleFile, downloadArchive } from './api/fileManagerFileApi';
-
-const API_URL = process.env.REACT_APP_API_URL;
-const PUBLIC_URL = process.env.PUBLIC_URL;
-
-
-const FileManager = ({ activeTab }) => {
-    const [folders, setFolders] = useState([]); // для хранения папок
-    const [files, setFiles] = useState([]); // для хранения файлов
     const [isLoadingFolders, setIsLoadingFolders] = useState(true); // индикатор окончания первичной загрузки
 
     const [currentFolderId, setCurrentFolderId] = useState(null); // текущая папка, в которой находится пользователь
     const [pathTo, setPathTo] = useState([]);              // путь к текущей папке
     const [forwardPath, setForwardPath] = useState([]);  //путь до папки, которую пользователь покинул(для кнопки вперед)
     //const [selectedFolders, setSelectedFolders] = useState([]);
-    const [lastSelectedFolder, setLastSelectedFolder] = useState(null); // последняя выделенная пользователем папка
-    const [lastSelectedFile, setLastSelectedFile] = useState(null); // последний выделенный пользователем файл
 
-    const { isSelecting, selectionArea, handleMouseDown, handleMouseUp, handleMouseMove, //логика для выделения папок и файлов с помощью выделяемой области
-        selectedAreaFolders, setSelectedAreaFolders, selectedAreaFiles, setSelectedAreaFiles, } = useSelection(folders, setLastSelectedFolder, files, setLastSelectedFile);
+    //const { selectedAreaFolders, setSelectedAreaFolders, selectedAreaFiles, setSelectedAreaFiles, } = useSelection(folders, setLastSelectedFolder, files, setLastSelectedFile);
 
     const [moveFiles, setMoveFiles] = useState([]); //файлы, которые пользователь хочет переместить
     const [moveFolders, setMoveFolders] = useState([]); //папки, которые пользователь намерен переместить
     const [isMoveMode, setIsMoveMode] = useState(false); //индикатор, показывающий, включен ли режим перемещения
 
-    const dropZoneRef = useRef();  //ссылка на элемент страницы, которая будет использоваться как dropZone
-    const isInternalDragging = useRef(false); // флаг, который срабатывает только когда файлы перетаскиваются внутри самой дропзоны
-    const [fileError, setFileError] = useState(false);  // флаг ошибки
-    const [fileErrorMessage, setFileErrorMessage] = useState(''); // текст ошибки, приходит из DropZone
-    /*const [isSelecting, setIsSelecting] = useState(false);
-    const [selectionArea, setSelectionArea] = useState({ startX: 0, startY: 0, endX: 0, endY: 0 });*/
+    //const dropZoneRef = useRef();  //ссылка на элемент страницы, которая будет использоваться как dropZone
 
-    const [showNameModal, setShowNameModal] = useState(false); // индикатор окна ввода имени
+
+
     const [initialName, setInitialName] = useState(''); // старое имя файла.
     const [modalType, setModalType] = useState(null); // "rename" или "create" для переименования. Чтобы NameInputModal их различал
 
@@ -132,19 +112,56 @@ const FileManager = ({ activeTab }) => {
         }
     };
 
-    const handleSelectFolder = (folderId) => {  // последняя выделенная папка
-        setLastSelectedFolder(folderId);
-        setLastSelectedFile(null);
-    };
+    const handleSelectItem = (type, id, isCtrl = false) => {
+        const setters = {
+            folder: {
+                lastState: lastSelectedFolder,
+                oppositeLastState: lastSelectedFile,
+                areaState: selectedAreaFolders,
+                lastSetter: setLastSelectedFolder,
+                areaSetter: setSelectedAreaFolders,
+                oppositeLastSetter: setLastSelectedFile,
+                oppositeAreaSetter: setSelectedAreaFiles,
+            },
+            file: {
+                lastState: lastSelectedFile,
+                oppositeLastState: lastSelectedFolder,
+                areaState: selectedAreaFiles,
+                lastSetter: setLastSelectedFile,
+                areaSetter: setSelectedAreaFiles,
+                oppositeLastSetter: setLastSelectedFolder,
+                oppositeAreaSetter: setSelectedAreaFolders,
+            },
+        };
 
-    const handleSelectFile = (fileId) => {   //последний выделенный файл
-        setLastSelectedFile(fileId);
-        setLastSelectedFolder(null);
-    };
+        const { lastState, oppositeLastState, areaState, lastSetter, areaSetter, oppositeLastSetter, oppositeAreaSetter } = setters[type];
 
-    const getRootFolderId = () => {
-        const rootFolder = folders.find(folder => folder.name === (activeTab === 'questions' ? 'Themes' : 'Tickets')); //определяем корневую папку
-        return rootFolder ? rootFolder.id : null; //возвращаем айди корневой папки или null если ее нет(на всякий, она должна быть всегда).
+        if(!isCtrl){
+            lastSetter(id);
+            oppositeLastSetter(null);
+            areaSetter([]);
+            oppositeAreaSetter([]);
+        } else {
+            const isAlreadySelected = (areaState.includes(id));
+            if (isAlreadySelected) {
+                areaState.length > 1 ? areaSetter(prev => prev.filter(item => item !== id)) : areaSetter([]);
+                return;
+            }
+
+            if (lastState || oppositeLastState){
+                areaSetter(prev =>[...prev, lastState]);
+                oppositeAreaSetter(prev => [...prev, oppositeLastState]);
+                lastSetter(null);
+                oppositeLastSetter(null);
+            } else if(!lastState && !oppositeLastState && !selectedAreaFolders.length > 0 && !selectedAreaFiles.length > 0){
+                lastSetter(id);
+                return;
+            }
+            areaSetter(prev => [...prev, id]);
+            lastSetter(null);
+            oppositeLastSetter(null);
+        }
+
     };
 
     const goToFolder = async (folderId) => {
@@ -419,252 +436,40 @@ const FileManager = ({ activeTab }) => {
 
     const handleTEST = () => {
         //console.log("MOVE FILES AND MOVE FOLDERS: ", moveFiles, moveFolders);
-        console.log("FILES: ", files);
-        console.log("FOLDERS: ", folders);
+        //console.log("FILES: ", files);
+        //console.log("FOLDERS: ", folders);
         //console.log("CURRENT FOLDER ID: ", currentFolderId);
         //console.log("PATH TO: ", pathTo);
-        //console.log("LAST SELECTED FILE: ", lastSelectedFile);
-        //console.log("LAST SELECTED FOLDER: ", lastSelectedFolder);
-        //.log("SELECTED AREA FOLDERS && LAST SELECTED FOLDER: ", selectedAreaFolders, lastSelectedFolder);
-        //console.log("SELECTED AREA FOLDERS", selectedAreaFolders);
+        console.log("LAST SELECTED FOLDER: ", lastSelectedFolder);
+        console.log("SELECTED AREA FOLDERS", selectedAreaFolders);
+        console.log("LAST SELECTED FILE: ", lastSelectedFile);
+        console.log("SELECTED AREA FILES", selectedAreaFiles);
+        //console.log("SELECTED AREA FOLDERS && LAST SELECTED FOLDER: ", selectedAreaFolders, lastSelectedFolder);
         //console.log("IS SELECTING", isSelecting);
     };
 
-
-    const renderFolderPath = () => {
-        if (!Array.isArray(pathTo) || pathTo.length === 0) { // на случай пустого пути
-            return activeTab === 'questions' ? 'Themes' : 'Tickets';
-        }
-
-        const rootFolderName = activeTab === 'questions' ? 'Themes' : 'Tickets'; //определяем какую корневую папку рендерить
-        const pathNames = [
-            <span
-                key="root"
-                className="folder-path__item"
-                onClick={() => goToFolder(getRootFolderId())}
-                style={{ cursor: 'pointer' }}
-            >
-            {rootFolderName}
-        </span>
-        ];
-
-        pathTo.forEach((folderId, index) => {  // отображаем весь путь pathTo
-            const folder = folders.find(f => f.id === folderId);
-            if (folder) {
-                pathNames.push(
-                    <span
-                        key={folderId}
-                        className="folder-path__item"
-                        onClick={() => goToFolder(folderId)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                    {' / ' + folder.name}
-                </span>
-                );
-            }
-        });
-
-        //console.log("PATH TO", pathTo);
-
-        return pathNames;
+    return {
+        folders,
+        files,
+        currentFolderId,
+        pathTo,
+        lastSelectedFile,
+        initialName,
+        modalType,
+        lastSelectedFolder,
+        handleSelectItem,
+        goToFolder,
+        handleBack,
+        handleForward,
+        handleSaveName,
+        handleCreateFolder,
+        handleRename,
+        handleDeleteItem,
+        handleUploadFile,
+        handleFileUpload,
+        handleDownloadFile,
+        handleMoveItem,
+        handlePasteItem,
+        handleTEST,
     };
-
-    const renderFolders = (parentId) => {
-        //console.log("PARENT ID", parentId);
-        return folders
-            .filter(folder => folder.parent_id === parentId)
-            .map(folder => {
-                let folderClass = 'item';
-                if (Array.isArray(selectedAreaFolders) && selectedAreaFolders.includes(folder.id)) {
-                    /*setLastSelectedFolder(null);*/
-                    folderClass += ' selected-folder';
-                }
-                if(lastSelectedFolder === folder.id) {
-                    folderClass += ' last-selected';
-                }
-                return (
-                    <div>
-                        <div
-                            key={folder.id}
-                            id={folder.id}
-                            className={folderClass}
-                            onClick={() => handleSelectFolder(folder.id)}
-                            onDoubleClick={() => goToFolder(folder.id)} >
-                            <img
-                                src={`${PUBLIC_URL}/icons/Folder.svg`}
-                                alt={`${folder.name}`}
-                                className="item-icon"
-                                draggable={false}
-                            />
-                            <div className="item-name font-14">{folder.name}</div>
-                        </div>
-                    </div>
-                )
-            });
-    };
-
-    const getFileIcon = (fileName) => {
-        const extension = fileName.split('.').pop().toLowerCase();
-
-        const iconMap = {
-            docx: `${PUBLIC_URL}/icons/files_icons/DOCX.svg`,
-            doc: `${PUBLIC_URL}/icons/files_icons/DOC.svg`,
-            /*pdf: `${PUBLIC_URL}/icons/PDF.svg`,
-            txt: `${PUBLIC_URL}/icons/TXT.svg`,*/  // на будущее мб
-        };
-
-        return iconMap[extension] || `${PUBLIC_URL}/icons/files_icons/unknown.svg`;
-    };
-
-    const renderFiles = (parentId) => {
-
-        return files
-            .filter(file => file.folderId === currentFolderId)
-            .map(file => {
-                let fileClass = 'item';
-                if (Array.isArray(selectedAreaFiles) && selectedAreaFiles.includes(file.id)) {
-                    fileClass += ' selected-folder';
-                }
-                if(lastSelectedFile === file.id) {
-                    fileClass += ' last-selected';
-                }
-
-                return (
-                    <div
-                        key={file.id}
-                        id={file.id}
-                        className={fileClass}
-                        draggable // делаем элемент перетягиваемым
-                        onClick={() => handleSelectFile(file.id)}
-                        onDragStart={(e) => {
-                            isInternalDragging.current = true;
-
-                            const draggedFileIds = selectedAreaFiles.length > 0
-                                ? selectedAreaFiles
-                                : [file.id]; // если выбран только один
-
-                            const draggedFiles = files.filter(f => draggedFileIds.includes(f.id)).map(f => ({
-                                id: f.id,
-                                name: f.fileName,
-                            }));
-
-                            e.dataTransfer.setData('application/json', JSON.stringify(draggedFiles));
-
-                            createCustomDragPreview(e, draggedFiles); // создается кастомная область для перетаскиваемых файлов.
-                        }}
-                        onDragEnd={() => {
-                            isInternalDragging.current = false; // сбрасываем
-                        }}
-                    >
-                        <img
-                            /*src={`${PUBLIC_URL}/icons/DOCX.svg`}*/
-                            src={getFileIcon(file.fileName)}
-                            alt={`${file.fileName}`}
-                            className="item-icon"
-                            draggable={false} //отключаем перетягивание самой иконки чтобы драгэндроп не пытался ее словить | upd: не помогло))
-
-                        />
-                        <div className="item-name font-14">{file.fileName}</div>
-                    </div>
-                )
-            });
-    };
-
-    return (
-        <div className="profile__folders">
-            <div className="folder-structure__toolbar">
-                <button onClick={handleBack} className="toolbar-btn" title="Назад">
-                    <BackArrowIcon className="toolbar-btn__icon"/>
-                </button>
-                <button onClick={handleForward} className="toolbar-btn" title="Вперед">
-                    <ForwardArrowIcon className="toolbar-btn__icon" draggable={false}/>
-                </button>
-                <div className="folder-path" title="Путь">
-                    <FolderPathIcon alt="Forward" className="toolbar-btn__icon" draggable={false}/><p>{renderFolderPath()}</p>
-                </div>
-                <button onClick={handleCreateFolder} className="toolbar-btn" title="Создать папку">
-                    <CreateIcon alt="Create" className="toolbar-btn__icon" draggable={false}/>
-                </button>
-                <button onClick={handleDeleteItem} className="toolbar-btn" title="Удалить">
-                    <DeleteIcon className="toolbar-btn__icon" />
-                </button>
-                <button onClick={handleRename} className="toolbar-btn" title="Переименовать">
-                    <RenameIcon alt="Rename" className="toolbar-btn__icon" draggable={false}/>
-                </button>
-
-
-                <button onClick={handleMoveItem} className="toolbar-btn" title="Переместить">
-                    <MoveItemIcon alt="Move" className="toolbar-btn__icon" draggable={false}/>
-                </button>
-
-                <button onClick={handlePasteItem} className="toolbar-btn" title="Вставить">
-                    <PasteItemIcon alt="Paste" className="toolbar-btn__icon" draggable={false}/>
-                </button>
-
-                <button onClick={handleUploadFile} className="toolbar-btn" title="Загрузить">
-                    <UploadIcon className="toolbar-btn__icon toolbar-icon-margin" /> Загрузить
-                </button>
-
-
-                <button onClick={handleDownloadFile} className="toolbar-btn" title="Скачать">
-                    <DownloadIcon className="toolbar-btn__icon toolbar-icon-margin" /> Скачать
-                </button>
-
-
-                <button onClick={handleTEST} className="toolbar-btn">   TEST   </button>
-            </div>
-            {showNameModal && (   // переименовать или дать имя окно
-                <NameInputModal
-                    initialName={initialName}
-                    isFile={modalType === "rename" && !!lastSelectedFile}
-                    onClose={() => setShowNameModal(false)}
-                    onSave={handleSaveName}
-                />
-            )}
-            <DropZone
-                ref={dropZoneRef}
-                onFileUpload={handleFileUpload}
-                isInternalDragging={isInternalDragging}
-                onFileError={(message) => {
-                    setFileError(true); // флаг ошибки
-                    setFileErrorMessage(message); // устанавливает текст сообщения
-                    setTimeout(() => setFileError(false), 5000); // скрывает надпись через 5 сек
-                }}
-            >
-                <div className="folder-list font-14" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
-                    {isSelecting && (
-                        <div
-                            className="selection-box"
-                            style={{
-                                left: Math.min(selectionArea.startX, selectionArea.endX) + 'px',
-                                top: Math.min(selectionArea.startY, selectionArea.endY) + 'px',
-                                width: Math.abs(selectionArea.endX - selectionArea.startX) + 'px',
-                                height: Math.abs(selectionArea.endY - selectionArea.startY) + 'px',
-                            }}
-                        >
-                            {/*{`(${isSelecting}, ${selectionArea.startX}, ${selectionArea.startY}) -> (${selectionArea.endX}, ${selectionArea.endY})`}*/}
-                            {/*<img src={`${PUBLIC_URL}/icons/rofl.svg`} alt="kupi_pzh" className="rofl"/>*/} {/*ну это мем чисто*/}
-                        </div>
-                    )}
-
-                    {currentFolderId === null ?
-                        renderFolders(getRootFolderId()) : // Если нет текущей папки, отображаем корневые папки
-                        renderFolders(currentFolderId) // Иначе отображаем дочерние папки для текущей
-                    }
-                    {currentFolderId === null ?
-                        renderFiles(getRootFolderId()) : // Если нет текущей папки, отображаем файлы из корневой папки
-                        renderFiles(currentFolderId) // Иначе отображаем файлы текущей папки
-                    }
-                </div>
-                {fileError && ( //сообщение об ошибке видно только пока флаг тру
-                    <div className="file-manager-dropzone-error-message font-14">
-                        {fileErrorMessage}
-                    </div>
-                )}
-
-            </DropZone>
-        </div>
-    );
 };
-
-export default FileManager;

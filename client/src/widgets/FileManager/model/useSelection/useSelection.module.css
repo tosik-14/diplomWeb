@@ -1,0 +1,28 @@
+.selectedFolder {
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);*/
+    box-sizing: border-box;
+    background-color: var(--selectedItems);
+    border-radius: 4%;
+}
+/*.folder-item.selected {
+    border: 2px solid #007bff;  !* Рамка синим цветом *!
+    box-sizing: border-box;
+    background-color: rgba(0, 123, 255, 0.1);  !* Легкий фон *!
+}*/
+
+.lastSelected {
+    border: 1px solid var(--lastSelected-border-clr);
+    box-sizing: border-box;
+    background-color: var(--selectedItems);
+    /*box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);*/
+    border-radius: 4%;
+}
+
+.selectionBox {
+    position: absolute;
+    border: 1px solid var(--selectedArea-border-clr);
+    background-color: var(--selectedArea-bg-clr);
+    /*background-color: rgba(255, 0, 0, 0.2);*/
+    pointer-events: none;
+    z-index: 10;
+}

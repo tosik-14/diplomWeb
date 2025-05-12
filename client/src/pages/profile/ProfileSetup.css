@@ -160,6 +160,7 @@
     align-self: flex-start;
     margin-bottom: 8px;
     margin-left: 20px;
+    color: var(--text-color);
 }
 
 .bio-textarea {

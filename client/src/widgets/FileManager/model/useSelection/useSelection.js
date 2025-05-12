@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import './useSelection.module.css'
 
 const useSelection = (folders, setLastSelectedFolder, files, setLastSelectedFile) => {
     const [isSelecting, setIsSelecting] = useState(false);  // индикатор показывающий, что пользователь выделяет область

@@ -12,10 +12,9 @@ export function createFile(raw) {
 
         getIconType() {
             const ext = this.getExtension();
-            if (['docx', 'doc'].includes(ext)) return 'word';
-            if (['pdf'].includes(ext)) return 'pdf';
-            if (['xlsx', 'xls'].includes(ext)) return 'excel';
-            return 'file';
+            if (['docx'].includes(ext)) return 'DOCX.svg';
+            if (['doc'].includes(ext)) return 'DOC.svg';
+            return 'unknown.svg';
         },
     };
 }
