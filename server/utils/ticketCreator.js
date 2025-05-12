@@ -438,7 +438,7 @@ async function saveTicketFileToDb({ userId, uniqueFileName, filePath }) { //со
     const newFile = await File.create({ // сохранение файла в бд
         fileName: uniqueFileName,
         filePath: filePath,
-        sectionId: rootTicketsFolder.id,
+        folderId: rootTicketsFolder.id,
         userId: userId,
     });
 

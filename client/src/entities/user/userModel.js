@@ -4,7 +4,7 @@ export function createUser(raw) {
         secondName: raw.secondName ?? '',
         patronymic: raw.patronymic ?? '',
         email: raw.email ?? '',
-        role: raw.role, // 'admin' или 'user'
+        role: raw.role,
         university: raw.university ?? '',
         faculty: raw.faculty ?? '',
         position: raw.position ?? '',
@@ -13,8 +13,7 @@ export function createUser(raw) {
         created_at: raw.created_at ?? '',
         profile_image: raw.profile_image ?? null,
 
-        // Пример метода, можно вызывать: user.isComplete()
-        isComplete() {
+        isComplete() { // все ли данные заполнены?
             return !!(raw.firstName && raw.secondName && raw.university && raw.faculty && raw.city && raw.position);
         },
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-/*import './Profile.css';*/
+
 import './FileManager.css';
 import '../../shared/styles/global.css';
 import useSelection from '../../shared/hooks/useSelection';
 import NameInputModal from '../../shared/ui/NameInputModal'; //ввод имени файла/папкуи
 import DropZone from '../../shared/lib/DropZone';
 import { createCustomDragPreview } from '../../shared/lib/dragPreview';
-import axios from "axios";
+
 import UploadIcon from '../../shared/icons/UploadIcon';
 import DeleteIcon from "../../shared/icons/DeleteIcon";
 import BackArrowIcon from "../../shared/icons/BackArrowIcon";
@@ -17,7 +17,11 @@ import RenameIcon from "../../shared/icons/RenameIcon";
 import MoveItemIcon from "../../shared/icons/MoveItemIcon";
 import PasteItemIcon from "../../shared/icons/PasteItemIcon";
 import DownloadIcon from "../../shared/icons/DownloadIcon";
-import {data} from "react-router-dom";
+
+import { fetchFolders, fetchFilesInFolder } from '../../shared/api/fileManagerApi';
+import { apiCreateFolder, renameFolder, deleteFolders, moveItems } from './api/fileManagerFolderApi';
+import { renameFile, deleteFiles, uploadFile, downloadSingleFile, downloadArchive } from './api/fileManagerFileApi';
+
 const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
@@ -54,58 +58,25 @@ const FileManager = ({ activeTab }) => {
 
 
 
-
     useEffect(() => {
-        const fetchFolders = async () => {
+        const init = async () => {
             const token = localStorage.getItem('token');
-            try {
-                const response = await fetch(`${API_URL}/api/folder?parentId=null`, { //первичная загрузка папок(корневых)
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+            const rootFolders = await fetchFolders(token, null);
+            setFolders(rootFolders);
+
+            const rootFolder = rootFolders.find(folder => folder.name === (activeTab === 'questions' ? 'Themes' : 'Tickets'));
+            if (rootFolder) {
+                const childFolders = await fetchFolders(token, rootFolder.id);
+                setFolders(prev => {
+                    const existingIds = new Set(prev.map(f => f.id));
+                    return [...prev, ...childFolders.filter(f => !existingIds.has(f.id))];
                 });
-                //console.log("ACTIVETAB", activeTab);
-                if (response.ok) {
-                    const data = await response.json();
-                    setFolders(data);
-                    //console.log("RESPONSE DATA:", data);
-
-                    const rootFolder = data.find(folder => folder.name === (activeTab === 'questions' ? 'Themes' : 'Tickets'));
-                    //console.log("ROOTFOLDER: ", rootFolder, activeTab);
-
-                    if (rootFolder) { // первичная загрузка папок(вложенных в корневую). Далее это будет делать handleFolderClick
-                        const childResponse = await fetch(`${API_URL}/api/folder?parentId=${rootFolder.id}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                            },
-                        });
-
-                        if (childResponse.ok) {
-                            const childFolders = await childResponse.json();
-                            setFolders((prevFolders) => {
-                                const existingIds = new Set(prevFolders.map(folder => folder.id));   // добавляем новые папки, не удаляя предыдущие
-                                const uniqueFolders = childFolders.filter(folder => !existingIds.has(folder.id));
-                                return [...prevFolders, ...uniqueFolders];
-                            });
-                            setIsLoadingFolders(false);
-                            //console.log("CHILD FOLDERS:", childFolders);
-                        } else {
-                            console.error('Ошибка при получении вложенных папок');
-                        }
-                    }
-
-                } else {
-                    console.error('Ошибка при получении папок');
-                }
-            } catch (error) {
-                console.error('Ошибка подключения к серверу:', error);
+                setIsLoadingFolders(false);
             }
         };
-
-        fetchFolders();
+        init();
     }, []);
+
 
     useEffect(() => {   // перерендер страницы в случае изменения currentFolderId и isLoadingFolders
         if(isLoadingFolders) return;
@@ -120,6 +91,47 @@ const FileManager = ({ activeTab }) => {
         updateFolders()
     }, [currentFolderId, isLoadingFolders]);
 
+    const fetchFiles = async (folderId) => {              // ||||||||||||||||||||| ЗАГРУЗКА ФАЙЛОВ
+        if (folderId === null){ folderId = getRootFolderId(); }
+        //console.log("FOLDER ID: ", folderId);
+        const token = localStorage.getItem('token');
+
+
+        try {
+            const files = await fetchFilesInFolder(token, folderId);
+            setFiles((prevFiles) => {
+                const existingIds = new Set(prevFiles.map(file => file.id));
+                const uniqueFiles = files.filter(file => !existingIds.has(file.id));
+                return [...prevFiles, ...uniqueFiles];
+            });
+        } catch (error) {
+            console.error('ошибка подключения к серверу:', error);
+        }
+    };
+
+    const handleFolderClick = async (folderId) => { // ЗАГРУЗКА ДОЧЕРНИХ ПАПОК
+        const token = localStorage.getItem('token');
+        try {
+
+            const folders = await fetchFolders(token, folderId);
+            //console.log("handleFolderClick data", data);
+            setFolders((prevFolders) => {
+                const existingIds = new Set(prevFolders.map(folder => folder.id));   // добавляем новые папки, не удаляя предыдущие
+                const uniqueFolders = folders.filter(folder => !existingIds.has(folder.id));
+                return [...prevFolders, ...uniqueFolders];
+            });
+            //console.log("handleFolderClick folders", folders);
+            setCurrentFolderId(folderId);
+            await fetchFiles(folderId); // загружаем файлы
+            //console.log("update folders handleFolderClick", folderId);
+
+            //console.log("handleFolderClick", response);
+
+        } catch (error) {
+            console.error('Не удалось подключится к серверу:', error);
+        }
+    };
+
     const handleSelectFolder = (folderId) => {  // последняя выделенная папка
         setLastSelectedFolder(folderId);
         setLastSelectedFile(null);
@@ -128,65 +140,6 @@ const FileManager = ({ activeTab }) => {
     const handleSelectFile = (fileId) => {   //последний выделенный файл
         setLastSelectedFile(fileId);
         setLastSelectedFolder(null);
-    };
-
-    const fetchFiles = async (folderId) => {              // ||||||||||||||||||||| ЗАГРУЗКА ФАЙЛОВ
-        if (folderId === null){ folderId = getRootFolderId(); }
-        //console.log("FOLDER ID: ", folderId);
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch(`${API_URL}/api/file?parentId=${folderId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                //setFiles(data);
-                setFiles((prevFiles) => {
-                    const existingIds = new Set(prevFiles.map(file => file.id));  // собираем id файлов которые уже есть в file
-                    const uniqueFiles = data.filter(file => !existingIds.has(file.id));  // добавляем в file тока новые id
-                    return [...prevFiles, ...uniqueFiles];
-                });
-                //console.log("FETCH FILES", data);
-            } else {
-                console.error('не удалось получить файлы');
-            }
-        } catch (error) {
-            console.error('ошибка подключения к серверу:', error);
-        }
-    };
-
-    const handleFolderClick = async (folderId) => { // ЗАГРУЗКА ДОЧЕРНИХ ПАПОК
-        try {
-            //console.log("update folders handleFolderClick", folderId);
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/api/folder?parentId=${folderId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            //console.log("handleFolderClick", response);
-            if (response.ok) {
-                const data = await response.json();
-                //console.log("handleFolderClick data", data);
-                setFolders((prevFolders) => {
-                    const existingIds = new Set(prevFolders.map(folder => folder.id));   // добавляем новые папки, не удаляя предыдущие
-                    const uniqueFolders = data.filter(folder => !existingIds.has(folder.id));
-                    return [...prevFolders, ...uniqueFolders];
-                });
-                //console.log("handleFolderClick folders", folders);
-                setCurrentFolderId(folderId);
-                await fetchFiles(folderId); // загружаем файлы
-
-            } else {
-                console.error('ошибка при получении вложенных папок');
-            }
-        } catch (error) {
-            console.error('Не удалось подключится к серверу:', error);
-        }
     };
 
     const getRootFolderId = () => {
@@ -273,112 +226,16 @@ const FileManager = ({ activeTab }) => {
 
     const createNewFolder = async (folderName) => {
         const token = localStorage.getItem('token');
-
         /*const folderName = prompt("Введите имя новой папки:");*/
-
         if (!folderName) return;
-
         const parent_Id = pathTo?.length ? pathTo[pathTo.length - 1] : getRootFolderId();
 
-        axios.post(`${API_URL}/api/folder`,
-            { name: folderName, parentId: parent_Id },
-            {
-                    headers: { 'Authorization': `Bearer ${token}`, }
-            })
-            .then(response => {
-                setFolders((prevFolders) => [...prevFolders, { //обновляем массив folders
-                    id: response.data.id,
-                    name: folderName,
-                    parent_id: parent_Id
-                }]);
-
-                handleFolderClick(parent_Id);
-                //console.log("NEW FOLDER IN THE END:", folders);
-            })
-            .catch(error => {
-                console.error("Ошибка при создании папки:", error);
-                alert("Не удалось создать папку");
-            });
-    };
-
-    const handleDeleteItem = async () => {
-        //console.log("SELECTED AREA FOLDERS && LAST SELECTED FOLDER: ", selectedAreaFolders, lastSelectedFolder);
-        const foldersToDelete = new Set(selectedAreaFolders);
-        if (lastSelectedFolder) foldersToDelete.add(lastSelectedFolder);
-
-        //console.log("SELECTED AREA FILES && LAST SELECTED FILE: ", selectedAreaFiles, lastSelectedFile);
-        const filesToDelete = new Set(selectedAreaFiles);
-        if (lastSelectedFile) filesToDelete.add(lastSelectedFile);
-
-        if (foldersToDelete.size === 0 && filesToDelete.size === 0) {
-            console.log("NO FILES OR FOLDERS TO DELETE.");
-            return;
-        }
-
-        //console.log("FOLDERS TO DELETE AND FILES TO DELETE", foldersToDelete, filesToDelete);
-
-        //console.log("FOLDER IDS", folderIds);
-
-        const token = localStorage.getItem('token');
         try {
-            if(foldersToDelete.size > 0) {
-                const folderIds = Array.from(foldersToDelete);
-                const response = await axios.delete(`${API_URL}/api/folder`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    data: { folderIds },
-                })
-                    .then(response =>{
-                        setFolders((prevFolders) => prevFolders.filter(folder => !foldersToDelete.has(folder.id))
-                        );
-                        handleFolderClick(currentFolderId);
-                        /*const result = response.data;
-                        console.log(result.message);*/
-                    })
-                    .catch(error => {
-                        console.error('Ошибка при удалении: ', error);
-                    });
-            }
-            if(filesToDelete.size > 0) {
-                const fileIds = Array.from(filesToDelete);
-                //console.log("FILES IDS", fileIds);
-                const response = await axios.delete(`${API_URL}/api/file`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    data: { fileIds },
-                })
-                    .then(response =>{
-                        setFiles((prevFiles) => prevFiles.filter(file => !filesToDelete.has(file.id))
-                        );
-                        handleFolderClick(currentFolderId);
-                        /*const result = response.data;
-                        console.log(result.message);*/
-                    })
-                    .catch(error => {
-                        console.error('Ошибка при удалении: ', error);
-                    });
-            }
-
-
-            /*if (!response.ok) {
-                throw new Error('Ошибка при удалении папок');
-            }*/
-
-            /*const result = await response.data;
-            console.log(result.message);*/
-
-
-            setSelectedAreaFolders([]);
-            setSelectedAreaFiles([]);
-            setLastSelectedFile(null);
-            setLastSelectedFolder(null);
-        } catch (error) {
-            console.error('Ошибка при удалении:', error);
-            alert('Не удалось удалить папки.');
+            await apiCreateFolder(token, folderName, parent_Id);
+            await handleFolderClick(parent_Id);
+        } catch (error){
+            console.error("Ошибка при создании папки:", error);
+            alert("Не удалось создать папку");
         }
     };
 
@@ -400,56 +257,40 @@ const FileManager = ({ activeTab }) => {
 
     const renameItem = async (newName) => {
         const token = localStorage.getItem('token');
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        };
 
         try {
             if (lastSelectedFolder) {
                 const folderId = lastSelectedFolder;
                 const parentId = pathTo?.length ? pathTo[pathTo.length - 1] : getRootFolderId(); // чтобы проверить есть ли такие имена в папке
 
-                await axios.put(
-                    `${API_URL}/api/folder`,
-                    { folderId, newFolderName: newName, parentId },
-                    { headers }
-                )
-                    .then(()=>{
-                        setFolders(prevFolders =>
-                            prevFolders.map(folder =>
-                                folder.id === folderId ? { ...folder, name: newName } : folder
-                            )
-                        );
-                        handleFolderClick(currentFolderId); // обновим папку
-                    })
-                    .catch(error => {
-                        console.error("ошибка при смене имени папки:", error);
-                        alert("не удалось переименовать папку");
-                    });
+                try {
+                    await renameFolder(token, folderId, newName, parentId);
+                    setFolders(prevFolders =>
+                        prevFolders.map(folder =>
+                            folder.id === folderId ? { ...folder, name: newName } : folder
+                        )
+                    );
+                    await handleFolderClick(currentFolderId);
+                }catch (error) {
+                    console.error("ошибка при смене имени папки:", error);
+                    alert("не удалось переименовать папку");
+                }
             }
 
             if (lastSelectedFile) {
                 const fileId = lastSelectedFile;
-
-                await axios.put(
-                    `${API_URL}/api/file`,
-                    { fileId, newFilename: newName },
-                    { headers }
-                )
-                    .then(()=>{
-                        setFiles(prevFiles =>
-                            prevFiles.map(file =>
-                                file.id === fileId ? { ...file, fileName: newName } : file
-                            )
-                        );
-                        handleFolderClick(currentFolderId); // обновим папку
-                    })
-                    .catch(error => {
-                        console.error("ошибка при смене имени файла:", error);
-                        alert("не удалось переименовать файл");
-                    });
-
+                try {
+                    await renameFile(token, fileId, newName);
+                    setFiles(prevFiles =>
+                        prevFiles.map(file =>
+                            file.id === fileId ? { ...file, fileName: newName } : file
+                        )
+                    );
+                    await handleFolderClick(currentFolderId); // обновим папку
+                }catch (error) {
+                    console.error("ошибка при смене имени файла:", error);
+                    alert("не удалось переименовать файл");
+                }
             }
 
 
@@ -459,40 +300,54 @@ const FileManager = ({ activeTab }) => {
         }
     };
 
+    const handleDeleteItem = async () => {
+        const foldersToDelete = new Set(selectedAreaFolders);
+        if (lastSelectedFolder) foldersToDelete.add(lastSelectedFolder);
+
+        const filesToDelete = new Set(selectedAreaFiles);
+        if (lastSelectedFile) filesToDelete.add(lastSelectedFile);
+
+        if (foldersToDelete.size === 0 && filesToDelete.size === 0) {
+            console.log("NO FILES OR FOLDERS TO DELETE.");
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        try {
+            if(foldersToDelete.size > 0) {
+                const folderIds = Array.from(foldersToDelete);
+                await deleteFolders(token, folderIds);
+                setFolders((prevFolders) => prevFolders.filter(folder => !foldersToDelete.has(folder.id)));
+            }
+            if(filesToDelete.size > 0) {
+                const fileIds = Array.from(filesToDelete);
+                await deleteFiles(token, fileIds);
+                setFiles((prevFiles) => prevFiles.filter(file => !filesToDelete.has(file.id)));
+            }
+
+            await handleFolderClick(currentFolderId);
+
+            setSelectedAreaFolders([]);
+            setSelectedAreaFiles([]);
+            setLastSelectedFile(null);
+            setLastSelectedFolder(null);
+        } catch (error) {
+            console.error('Ошибка при удалении:', error);
+            alert('Не удалось удалить папки.');
+        }
+    };
+
     const handleUploadFile = () => { // вызывается при нажатии кнопки загрузить файл
         dropZoneRef.current?.openFileDialog(); // открывается окно для выбора файла
     };
 
     const handleFileUpload = async (file) => {
-        //console.log("FILE TO UPLOAD:", file);
         const token = localStorage.getItem('token');
         const parent_Id = pathTo?.length ? pathTo[pathTo.length - 1] : getRootFolderId();
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folderId', parent_Id);
-        //console.log("FORM DATA:", formData.file);
         try {
-            const response = await axios.post(`${API_URL}/api/file`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(response => {
-                    //console.log("FILE IN RESPONSE.DATA: ", response.data)
-                    setFiles((prevFiles) => [...prevFiles, response.data]);
-
-
-                    handleFolderClick(parent_Id);
-                    //fetchFiles(parent_Id);
-                    //console.log("NEW FOLDER IN THE END:", folders);
-                })
-                .catch(error => {
-                    console.error("ошибка при загрузке файла:", error);
-                    alert("не удалось загрузить файл");
-                });
-
+            const uploadedFile = uploadFile(token, file, parent_Id);
+            setFiles((prevFiles) => [...prevFiles, uploadedFile]);
+            await handleFolderClick(currentFolderId);
         } catch (error) {
             console.error('ошибка при загрузке файла:', error);
         }
@@ -502,65 +357,28 @@ const FileManager = ({ activeTab }) => {
         const token = localStorage.getItem('token');
         const fileIds = selectedAreaFiles.length > 0 ? selectedAreaFiles : [lastSelectedFile];
 
-        if (fileIds.length === 1) { //скачивание одного файла
-            const fileId = fileIds[0];
-            const downloadUrl = `${API_URL}/api/file/download?fileId=${fileId}`;
+        try {
+            let blob, fileName; //blob - ссылка на скачивание. (бинарные данные: Binary Large Object)
 
-            const token = localStorage.getItem('token');
-
-            const response = await axios.get(downloadUrl, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                responseType: 'blob',  // получение файла в виде бинарных данных(тип ответа)
-            });
-
-            const disposition = response.headers['content-disposition'];
-            let fileName = 'downloaded_file';
-            //console.log("DISPOSITION", disposition);
-            if (disposition) { // извлечение имени из заголовков
-                const filenameStarMatch = disposition.match(/filename\*\=UTF-8''(.+?)(?:;|$)/); // должен включать filename*
-                if (filenameStarMatch && filenameStarMatch[1]) {
-                    fileName = decodeURIComponent(filenameStarMatch[1]); // раскодирование, пример: %D1%82 в т
-                } else { // если filename* не включен. Это будет плохо для имени на русском
-                    const filenameMatch = disposition.match(/filename="?([^"]+)"?/);
-                    if (filenameMatch && filenameMatch[1]) {
-                        fileName = filenameMatch[1];
-                    }
-                }
+            if(fileIds.length === 1) {
+                const result = await downloadSingleFile(token, fileIds[0]);
+                blob = result.blob;
+                fileName = result.fileName;
+            } else if (fileIds.length > 1) {
+                const result = await downloadArchive(token, fileIds);
+                blob = result.blob;
+                fileName = result.fileName;
             }
-
-            const blob = response.data; // ссылка на скачивание
-            const link = document.createElement('a'); // создание 'a' элемента, который имитирует ссылку
             const url = window.URL.createObjectURL(blob); // создаем ссылку для 'a'
+            const link = document.createElement('a'); // создание 'a' элемента, который имитирует ссылку
             link.href = url; // вносим в элемент 'a' ссылку
             link.setAttribute('download', fileName );  // указываем имя файла и то что его нужно скачать
             document.body.appendChild(link); //добавляем 'a' элемент
             link.click(); // имитируем клик по элементу
             document.body.removeChild(link); //удаляем 'a' элемент
             window.URL.revokeObjectURL(url);  // удаляем ссылку
-        } else if (fileIds.length > 1) {
-
-            // ну тут короче если файлов больше одного, то они скачиваются архивом
-
-            const downloadUrl = `${API_URL}/api/file/download-archive`;
-            const response = await axios.post(downloadUrl, { fileIds }, {
-                headers: { 'Authorization': `Bearer ${token}` },
-                responseType: 'blob',
-            });
-
-            const archiveName = 'files.zip'; // имя архива статично
-
-
-            const blob = new Blob([response.data]); // всё +- так же, как выше
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', archiveName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('ошибка при скачивании файла:', error);
         }
     };
 
@@ -578,35 +396,21 @@ const FileManager = ({ activeTab }) => {
 
     const handlePasteItem = async () => {
         if (!isMoveMode || (moveFiles.length === 0 && moveFolders.length === 0)) return;
-
-
         if (moveFolders.includes(currentFolderId)) {
             alert('нельзя переместить папку внутрь себя');
             return;
         }
-
         try {
-            await axios.post(`${API_URL}/api/folder/move`, {
-                folderIds: moveFolders,
-                fileIds: moveFiles,
-                targetFolderId: currentFolderId
-            }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            })
+            const token = localStorage.getItem('token');
+            await moveItems(token, moveFolders, moveFiles, currentFolderId);
 
-                .then(() => {
-                    setFiles(prevFiles => prevFiles.filter(file => !moveFiles.includes(file.id)));
-                    setFolders(prevFolders => prevFolders.filter(folder => !moveFolders.includes(folder.id)));
+            setFiles(prev => prev.filter(file => !moveFiles.includes(file.id)));
+            setFolders(prev => prev.filter(folder => !moveFolders.includes(folder.id)));
 
-                    setMoveFiles([]);
-                    setMoveFolders([]);
-                    setIsMoveMode(false);
-                    handleFolderClick(currentFolderId);
-                })
-                .catch(error => {
-                    console.error('ошибка перемещения элементов:', error);
-                    alert('не удалось переместить элементы');
-                });
+            setMoveFiles([]);
+            setMoveFolders([]);
+            setIsMoveMode(false);
+            await handleFolderClick(currentFolderId);
         } catch (e) {
             console.error('ошибка при перемещении, подключении:', e);
             alert('ошибка при перемещении элементов, ошибка подключения');

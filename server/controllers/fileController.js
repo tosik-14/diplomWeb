@@ -32,7 +32,7 @@ const uploadFile = async (req, res) => { // загрузить файл
         const cleanFileName = file.decodedOriginalName || file.originalname; //если есть раскодированное имя, которое есть из-за
                                                                              //русских названий, то берем его
 
-        const existingFile = await File.findOne({ // проверка существует ли уже такой файл
+        /*const existingFile = await File.findOne({ // проверка существует ли уже такой файл
             where: {
                 fileName: cleanFileName, //проверяем по логическому имени. из папки сервера имена не отображаются и они всегда уникальны
                 folderId: folderId,      // проверяем файлы с одним folderId
@@ -41,9 +41,9 @@ const uploadFile = async (req, res) => { // загрузить файл
         });
 
         if (existingFile) {
-            return res.status(400).json({ message: 'файл с таким именем уже существует' });
+            return res.status(400).json({ message: 'файл с таким именем уже существует, log№1' });
         }
-
+*/
         const normalizedPath = file.path.replace(/\\/g, '/'); // меняем в пути к файлу \ на / для веб формата
         //console.log("FILENAME, FILEPATH: ", file.originalname, file.path);
 
