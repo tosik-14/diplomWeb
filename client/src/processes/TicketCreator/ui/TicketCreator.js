@@ -1,15 +1,22 @@
 import React, {useEffect, useRef, useState} from 'react';
 //import Draggable from 'react-draggable';
-import DropZone from "../../shared/lib/DropZone/DropZone";
+import DropZone from "../../../shared/lib/DropZone/DropZone";
 import { useNavigate } from 'react-router-dom';
-import './TicketCteator.css';
-import '../../shared/styles/global.css';
-import { startResize } from './ticketResizer'
-import { useCustomDraggable } from '../../shared/hooks/useCustomDraggable';
-import { validateFile, validateFileFromStorage, createTickets } from './ticketApi'
+import '../styles/TicketCteator.css';
+import '../../../shared/styles/global.css';
+import { startResize } from '../../../shared/utils/resizer'
+import {useTicketCreatorHooks} from "../hooks/useTicketCreatorHooks";
+import {useCreateTicketSubmit} from "../model/useCreateTicketSubmit";
+import {useTicketCreator} from "../model/useTicketCreator";
+import { useCustomDraggable } from '../../../shared/hooks/useCustomDraggable';
+import { validateFile, validateFileFromStorage, createTickets } from '../api/ticketApi'
 
-import UploadIcon from '../../shared/icons/UploadIcon';
-import DeleteIcon from "../../shared/icons/DeleteIcon";
+
+import UploadIcon from '../../../shared/icons/UploadIcon';
+import DeleteIcon from "../../../shared/icons/DeleteIcon";
+
+import {useWindowPosition} from "../../../shared/hooks/useWindowPosition";
+import {useAdminPanel} from "../../../pages/admin/model/useAdminPanel";
 
 
 const PUBLIC_URL = process.env.PUBLIC_URL;
@@ -21,97 +28,32 @@ const TicketCreator = ({ user, visible, onClose }) => {
         Array(dropAreasCount).fill([]) // двумерный массив для хранения файлов в случае разных типов вопросов. формат: [ [ файл1, файл2 ], [ ], и т.д. до 5]
     );  //от dropAreasCount зависит "вторая мерность хз, короче j"
     //const [questionsPerTicket, setQuestionsPerTicket] = useState(2);
-    const [questionsPerType, setQuestionsPerType] = useState([2]); //количество вопросов в каждом типе
+   /* const [questionsPerType, setQuestionsPerType] = useState([2]); //количество вопросов в каждом типе*/
 
     /*const [position, setPosition] = useState({ x: 0, y: 0 });*/
     const [userPosition, setUserPosition] = useState(null); //должность. информация из бд, в будущем ее количество может расти. Например для уника, или факультета и тд
     const [userName, setUserName] = useState(null); // ФИО юзера
 
-    const [position, setPosition] = useState(null); // сначала null
-    const [size, setSize] = useState({ width: 835, height: 600 });
-    const [hasInitialized, setHasInitialized] = useState(false);
+    const { position, setPosition, size, setSize } = useWindowPosition({ width: 835, height: 600 });
 
     useEffect(() => {
-        if (!hasInitialized && position === null && user) {
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            const initialX = (windowWidth - size.width) / 2;
-            let initialY = (windowHeight - size.height) / 2;
-
-            initialY = Math.max((windowHeight - size.height) / 2, 0); // если высота страницы-высота окна меньше 0, то начальная позиция по y 0,
-
-            setPosition({ x: initialX, y: initialY });
-            setHasInitialized(true);
-
-
-            /*setUserName(`${user.secondName} ${user.firstName[0]}.${user.patronymic ? `${user.patronymic[0]}.` : ''}`);*/
+        if (user) {
             const userNameBuf = `${user.secondName} ${user.firstName[0]}.${user.patronymic ? `${user.patronymic[0]}.` : ''}`;
             setUserName(userNameBuf);
             setUserPosition(user.position);
-
-            //console.log("USER", user);
         }
-    }, [hasInitialized, position, size]);
+    }, [user]);
 
     const nodeRef = useRef(null);
     const fileZoneRefs = useRef([]); // массив ссылок на ДОМ элементы дропзоны, чтобы каждая кнопка загрузить отвечала за свою дропзону
     const [isNarrow, setIsNarrow] = useState([]);//тру если дропзона меньше 216пх
     const zoneRefs = useRef([]); //ссылки на дропзоны
 
-    useEffect(() => { //изменение размера массива файлов вместе с изменением количества типов вопросов
-        setDropZoneFiles((prev) => {
-            const newFiles = [...prev];
-
-            if (dropAreasCount > newFiles.length) { // добавить новый массив в массив
-                while (newFiles.length < dropAreasCount) {
-                    newFiles.push([]);
-                }
-            } else if (dropAreasCount < newFiles.length) { // удалить
-                newFiles.length = dropAreasCount;
-            }
-
-            return newFiles;
-        });
-
-    }, [dropAreasCount]);
-
-    //спорное решение, но красота требует жертв
-    useEffect(() => { // ResizeObserver - браузерный api инструмент, отслеживает изменения размеров элемента на странице
-        const observer = new ResizeObserver((entries) => {//создаем новый экземпляр ResizeObserver, который будет реагировать на изменение размеров элементов
-            setIsNarrow((prev) => { // обновляем состояние isNarrow, в зависимости от ее ширины
-                const updated = [...prev]; // записываем предыдущее состояние, чтобы можно было изменить по индексам
-
-                entries.forEach((entry) => {
-
-                    const i = zoneRefs.current.findIndex((el) => el === entry.target);//находим индекс текущего элемента в массиве ссылок zoneRefs
-
-                    if (i !== -1) {
-
-                        updated[i] = entry.contentRect.width < 216;//проверяем ширину зоны, если она меньше 216пх, то ставим тру для дропзоны, типа она узкая
-                    }
-                });
-
-                return updated; // возвращаем обновлённый массив
-            });
-        });
-
-        zoneRefs.current.forEach((el) => {//подключаем ResizeObserver ко всем зонам, хранящимся в массиве ссылок
-            if (el) observer.observe(el); //подписываемся на изменение размеров дропзоны(начинаем следить)
-        });
-
-        return () => {//возвращаем функцию очистки, чтобы остановить наблюдение при закрытии страницы или изменении ссылок
-            zoneRefs.current.forEach((el) => {
-                if (el) observer.unobserve(el);// отписываемся от изменения размеров(перестаем следить)
-            });
-        };
-    }, [size.width, dropAreasCount]); //эффект повторно срабатывает при изменении ширины окна или количества дропзон
 
 
 
-
-
-    const [fileError, setFileError] = useState(false);  // флаг ошибки
-    const [fileErrorMessage, setFileErrorMessage] = useState(''); // текст ошибки, приходит из DropZone
+   /* const [fileError, setFileError] = useState(false);  // флаг ошибки
+    const [fileErrorMessage, setFileErrorMessage] = useState(''); // текст ошибки, приходит из DropZone*/
 
     const [emptyInput, setEmptyInput] = useState(false);  // флаг ошибки
     const [emptyInputMessage, setEmptyInputMessage] = useState(''); // текст ошибки, приходит из DropZone
@@ -149,72 +91,49 @@ const TicketCreator = ({ user, visible, onClose }) => {
     const [approvalYear, setApprovalYear] = useState(year);//год утверждения билетов
 
     const [ticketProtocol, setTicketProtocol] = useState(1);//номер протокола
-
-
-
-
-
     //const isInternalDragging = useRef(false);
     const { handleMouseDown } = useCustomDraggable({ size, position, setPosition });
 
-    useEffect(() => {
-        const handleEscape = (e) => {
-            if (e.key === 'Escape') onClose();
-        };
-        window.addEventListener('keydown', handleEscape);
-        return () => window.removeEventListener('keydown', handleEscape);
-    }, [onClose]);
+    const { handleCreateTickets } = useCreateTicketSubmit();
 
-    const errorAlert = (message) => {
-        setEmptyInput(true);  // включаем отображение ошибки
-        setEmptyInputMessage(message);
-        setTimeout(() => setEmptyInput(false), 5000); // скрывает надпись через 5 сек
-    };
+    const {
+        questionsPerType,
+        handleFileUpload,
+        handleServerFileDrop,
+        handleRemoveFile,
+        handleAddType,
+        handleRemoveType,
+        handleQuestionCountChange,
+        errorAlert,
+        handleSetSeason,
+        fileError,
+        fileErrorMessage,
+        setFileErrorMessage,
+        setFileError,
+    } = useTicketCreator({
+        dropZoneFiles,
+        setDropZoneFiles,
+        dropAreasCount,
+        setDropAreasCount,
+        setEmptyInput,
+        setEmptyInputMessage,
+        setSeason,
+    });
 
-    const handleCreateTickets = async () => {
-        //console.log("EMPTY INPUT", emptyInput);
-        //console.log("DROP ZONE FILES", dropZoneFiles);
-        //console.log("FACULTY", faculty)
-        //console.log("QUESTIONS PER TICKET", questionsPerTicket);
-        //console.log("QUESTIONS PER TYPE", questionsPerType);
-        //navigate('/profile');
-        const count = Number(ticketCount);
-        if (!ticketCount || isNaN(count) || count <= 0 || !Number.isInteger(count)) {
-            errorAlert('Введите корректное количество билетов');
-            return;
-        }
-        if (!userName || !userPosition) {
-            errorAlert('Заполните ФИО, должность');
-            return;
-        }
-        if (season === null){
-            errorAlert('Укажите время года сессии');
-            return;
-        }
-        if (!startYear || !endYear) {
-            errorAlert('Укажите год сессии.');
-            return;
-        }
-        if (!approvalDay || !approvalMonth || !approvalYear || !ticketProtocol) {
-            errorAlert('Укажите дату утверждения билетов и протокол');
-            return;
-        }
-        const hasInvalidQuestionCount = questionsPerType.some(q => !q || isNaN(q) || q <= 0 || !Number.isInteger(Number(q)));
-        if (hasInvalidQuestionCount) {
-            errorAlert('Введите корректное количество вопросов каждого типа');
-            return;
-        }
-        const allZonesHaveFiles = dropZoneFiles.every(zone => zone.length > 0);
-        if (!allZonesHaveFiles) {
-            errorAlert('У вас есть тип вопросов без файла с вопросами.');
-            return;
-        }
+    useTicketCreatorHooks({
+        dropAreasCount,
+        setDropZoneFiles,
+        zoneRefs,
+        setIsNarrow,
+        size,
+    });
 
-        const payload = { // дичь
-            ticketCount: count,
-            fileName: ticketsFileName,
-            dropZoneFiles, // массив массивов файлов каждой дропзоны
-            questionsPerType, // количество вопросов каждого типа
+    const handleTicketsCreate = async () => {
+        await handleCreateTickets({
+            ticketCount,
+            dropZoneFiles,
+            questionsPerType,
+            ticketsFileName,
             university,
             faculty,
             discipline,
@@ -224,32 +143,26 @@ const TicketCreator = ({ user, visible, onClose }) => {
             userPosition,
             ticketProtocol,
             season,
-            sessionYears: `20${startYear}/20${endYear}`,
-            approvalDate: `${approvalDay.padStart(2, '0')}.${approvalMonth.padStart(2, '0')}.${approvalYear}`,
+            startYear,
+            endYear,
+            approvalDay,
+            approvalMonth,
+            approvalYear,
+            createTickets,
+            navigate,
+            onClose,
+            errorAlert,
+        });
+    };
+
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') onClose();
         };
+        window.addEventListener('keydown', handleEscape);
+        return () => window.removeEventListener('keydown', handleEscape);
+    }, [onClose]);
 
-        try {
-            const response = await createTickets(payload); //функция в ticketApi
-            console.log('Билеты успешно созданы:', response);
-            navigate('/profile', { state: { activeTab: 'tickets' } });
-            //alert('Билеты успешно созданы!');
-        } catch (error) {
-            if (error.response && error.response.status === 207) {
-                const { message, errors } = error.response.data;
-                console.log(message);
-                console.log(errors);  // мой массив ошибок с сервера, ящик пандоры
-            } else {
-                console.error('Что-то пошло не так:', error.message);
-            }
-        }
-
-        onClose();
-
-    };
-
-    const handleSetSeason = (season) => {
-        setSeason(season);
-    };
 
 
     useEffect(() => { //изменяем массив рефов в зависимости от числа дропзон
@@ -261,105 +174,9 @@ const TicketCreator = ({ user, visible, onClose }) => {
     };
 
 
-    const handleFileUpload = async (file, areaIndex) => {  // если файл загружается с компьютера
-        /*
-        *
-        * СЮДА ДОБАВИТЬ ОГРАНИЧЕНИЕ НЕ БОЛЕЕ 5 ФАЙЛОВ НА ЗОНУ
-        *
-        *
-        * */
-        setDropZoneFiles(prev => { // сразу записываем файл в массив
-            const newState = [...prev]; // копируется текущий массив дропзон
-            newState[areaIndex] = [...newState[areaIndex], file];// добавляется в массив новый файл в формате { name: 'test.docx' }
-            return newState;
-        });
-
-        const result = await validateFile(file); // отправляем файл серверу на проверку, если файл говно, то удаляем из массива
-
-        if (!result.success) {
-            setDropZoneFiles(prev => { // удаление файла из массива
-                const newState = [...prev];
-                newState[areaIndex] = newState[areaIndex].filter(f => f !== file);
-                return newState;
-            });
-
-            setFileError(true);  // включаем отображение ошибки
-            setFileErrorMessage(`Файл "${file.name}" не может быть использован: ${result.error}`);
-            setTimeout(() => setFileError(false), 5000); // скрывает надпись через 5 сек
-        }
-    };
-
-    const handleServerFileDrop = async (fileInfo, areaIndex) => {// если файл загружается с родительского окна
-        const result = await validateFileFromStorage(fileInfo.id);
-
-        if (!result.success) {
-            setFileError(true);
-            setFileErrorMessage(`Файл "${fileInfo.name}" не может быть использован: ${result.error}`);
-            setTimeout(() => setFileError(false), 5000); // скрывает надпись через 5 сек
-            return;
-        }
-
-        setDropZoneFiles(prev => {
-            const newState = [...prev]; // копируется текущий массив дропзон
-            newState[areaIndex] = [...newState[areaIndex], fileInfo]; // добавляется в массив новый файл в формате { id: 42, name: 'test.docx' }
-            return newState;
-        });
-    };
-
-    const handleRemoveFile = (areaIndex, fileIndex) => { // удаление из области
-        setDropZoneFiles(prev => {
-            const updated = [...prev];// копируется текущий массив дропзон
-            updated[areaIndex] = updated[areaIndex].filter((_, i) => i !== fileIndex); // сохраняем все кроме удаляемого
-            return updated;
-        });
-    };
-
-
-    const handleAddType = () => { // добавление нового типа вопросов(с проверкой не больше 5)
-        setDropAreasCount((prevCount) => {
-            if (prevCount < 5) {
-                setQuestionsPerType((prev) => {
-                    if (prev.length < prevCount + 1) {
-                        return [...prev, 1];
-                    }
-                    return prev;
-                });
-                return prevCount + 1;
-            }
-            return prevCount;
-        });
-    };
-
-    const handleRemoveType = (index) => { // удаление типа вопросов(с проверкой не меньше 1)
-        setQuestionsPerType((prev) => prev.filter((_, i) => i !== index));
-        setDropZoneFiles((prev) => prev.filter((_, i) => i !== index));
-        setDropAreasCount((prev) => Math.max(prev - 1, 1));
-    };
-
-    const handleQuestionCountChange = (index, newValue) => { // проверка на правильность числа
-        if (isNaN(newValue) || newValue < 1) return;
-
-        setQuestionsPerType((prev) => {
-            const updated = [...prev];
-            updated[index] = newValue;
-            return updated;
-        });
-    };
-
     if (position === null) return null;
     return (
         <div className="ticket-creator__backdrop">
-            {/*<Draggable
-                nodeRef={nodeRef}
-                handle=".ticket-creator__header"
-                onDrag={(e, data) => {
-                    setPosition(prev => ({
-                        x: prev.x + data.deltaX,
-                        y: prev.y + data.deltaY,
-                    }));
-                }}
-                position={null}
-            >*/}
             <div
                 className="ticket-creator__wrapper"
                 ref={nodeRef}
@@ -374,9 +191,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
                     top: position.y,
                     transform: 'none',
                 }}
-
                 >
-
 
                 <div className="ticket-creator">
                     <div
@@ -391,15 +206,6 @@ const TicketCreator = ({ user, visible, onClose }) => {
                             </button>
                         </div>
                     </div>
-                    {/*<div className="ticket-creator__header">
-                        <div className="ticket-creator__header-wrapper font-20">
-                            Настройка генерации
-                            <button onClick={onClose} className="ticket-creator__close">
-                                <img src={`${PUBLIC_URL}/icons/close.svg`} alt="close" width={25} height={25} />
-                            </button>
-                        </div>
-                    </div>*/}
-
 
 
                     <div className="ticket-creator__modal">
@@ -443,11 +249,6 @@ const TicketCreator = ({ user, visible, onClose }) => {
                                 />
                             </div>
 
-                            {/*<div className="ticket-creator__row">*/}
-
-
-
-                            {/*</div>*/}
 
                         </div>
 
@@ -845,7 +646,7 @@ const TicketCreator = ({ user, visible, onClose }) => {
 
 
 
-                                <button className="ticket-creator__generate-btn button_st font-16" onClick={handleCreateTickets}>
+                                <button className="ticket-creator__generate-btn button_st font-16" onClick={handleTicketsCreate}>
                                     {emptyInput && (<span className="generate-btn-alert font-14">{emptyInputMessage}</span>)}
                                     Сгенерировать
                                 </button>
@@ -859,28 +660,48 @@ const TicketCreator = ({ user, visible, onClose }) => {
                         position,
                         setPosition,
                         size,
-                        setSize })} />
+                        setSize,
+                        minW: 700,
+                        maxW: 1200,
+                        minH: 300,
+                        maxH: 1000,
+                    })} />
                     <div className="resizer resizer--bottom" onMouseDown={startResize({
                         direction: "bottom",
                         nodeRef,
                         position,
                         setPosition,
                         size,
-                        setSize })} />
+                        setSize,
+                        minW: 700,
+                        maxW: 1200,
+                        minH: 300,
+                        maxH: 1000,
+                    })} />
                     <div className="resizer resizer--left" onMouseDown={startResize({
                         direction: "left",
                         nodeRef,
                         position,
                         setPosition,
                         size,
-                        setSize })} />
+                        setSize,
+                        minW: 700,
+                        maxW: 1200,
+                        minH: 300,
+                        maxH: 1000,
+                    })} />
                     <div className="resizer resizer--top" onMouseDown={startResize({
                         direction: "top",
                         nodeRef,
                         position,
                         setPosition,
                         size,
-                        setSize })} />
+                        setSize,
+                        minW: 700,
+                        maxW: 1200,
+                        minH: 300,
+                        maxH: 1000,
+                    })} />
                 </div>
             </div>
             {/*</Draggable>*/}

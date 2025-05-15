@@ -1,53 +1,26 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import './AdminPanel.css';
-import '../../shared/styles/global.css';
-import axios from "axios";
+import '../style/AdminPanel.css';
+import '../../../shared/styles/global.css';
+import { useAdminPanel } from "../model/useAdminPanel";
+import { getAdminData, updateUserRoles, deleteUsers } from "../api/adminPanelApi";
 
-const API_URL = process.env.REACT_APP_API_URL;
 const PUBLIC_URL = process.env.PUBLIC_URL;
 
 
 const AdminPanel = () => {
     const navigate = useNavigate();
-    const [users, setUsers] = useState([]);
-    const [selectedUserIds, setSelectedUserIds] = useState([]);
-    const [adminName, setAdminName] = useState('');
     const [expandedUserId, setExpandedUserId] = useState(null); // для доп данных пользователя
 
-    const fetchAdminData = async () => {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/api/admin-data`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            }
-        });
-
-        if (response.status === 403) { // на случай если пользователь не админ или он забрал у себя статус админа
-            navigate('/profile');
-            return;
-        }
-
-        if (response.ok) {
-            const data = await response.json();
-            //console.log("DATA: ", data);
-            const current = data.currentUser;
-            //console.log("CURRENT: ", current);
-
-            const secondName = current.secondName || '';
-            const firstInitial = current.firstName || ''; //?.[0] || '' конечно это тупо добавлять такую проверку для имени, но мне кажется ее стоит добавить
-            //хотя тогда ее следует добавлять везде, иначе в ней нет смыла -_-    короче хз
-            const patronymicInitial = current.patronymic || '';
-
-            setAdminName(`${secondName} ${firstInitial} ${patronymicInitial}`);
-
-            /*setAdminName(`${current.secondName} ${current.firstName[0]}.${current.patronymic[0]}.`);*/
-            setUsers(data.users);
-        } else {
-            console.error('Ошибка при получении данных администратора');
-        }
-    };
+    const {
+        users,
+        adminName,
+        selectedUserIds,
+        setSelectedUserIds,
+        fetchAdminData,
+        handleRoleUpdate,
+        deleteUser,
+    } = useAdminPanel();
 
     useEffect(() => {
         fetchAdminData();
@@ -55,31 +28,6 @@ const AdminPanel = () => {
 
     const onBackToProfile = () => {
         navigate('/profile');
-    };
-
-    const handleRoleUpdate = async (isAdminNew) => {  // обновляем статус юзера
-        const token = localStorage.getItem('token');
-        try {
-            const response = await axios.put(
-                `${API_URL}/api/update-roles`,
-                {
-                    userIds: selectedUserIds,
-                    isAdmin: isAdminNew,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            ).then(() => {
-                fetchAdminData();
-            });
-
-            //console.log('UPDATED:', response.data);
-            setSelectedUserIds([]); // очищаем выделение после обновления
-        } catch (error) {
-            console.error('Ошибка при обновлении ролей:', error);
-        }
     };
 
     const onSetAdmin = async () => {
@@ -91,8 +39,6 @@ const AdminPanel = () => {
         await handleRoleUpdate(false);
     };
 
-
-
     const handleCheckboxChange = (userId) => {
         setSelectedUserIds((prevSelected) =>
             prevSelected.includes(userId)
@@ -102,33 +48,6 @@ const AdminPanel = () => {
         //console.log("SELECTED USERS:", selectedUserIds);
     };
 
-    /*const toggleExpand = (userId) => {
-        setExpandedUserId(prev => (prev === userId ? null : userId));
-    };*/
-
-    const deleteUser = async () => {
-        if(selectedUserIds.length === 0){
-            alert("Выберите пользователей");
-            return;
-        }
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.delete(`${API_URL}/api/auth/delete-users`,{
-                    data: { userIds: selectedUserIds },
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            ).then(() => {
-                fetchAdminData();
-            });
-
-            //console.log('UPDATED:', response.data);
-            setSelectedUserIds([]); // очищаем выделение после обновления
-        } catch (error) {
-            console.error('Ошибка при удалении пользователей:', error);
-        }
-    };
 
     return (
         <div className="container">

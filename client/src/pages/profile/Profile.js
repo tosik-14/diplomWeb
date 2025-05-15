@@ -4,7 +4,7 @@ import './Profile.css';
 import '../../shared/styles/global.css';
 import ProfileView from '../../widgets/ProfileView/ProfileView';
 import FileManager from "../../widgets/FileManager/ui/FileManager";
-import TicketCreator from "../../processes/TicketCreator/TicketCreator";
+import TicketCreator from "../../processes/TicketCreator/ui/TicketCreator";
 import {createUser} from "../../entities/user/userModel";
 import { useLocation } from 'react-router-dom';
 const API_URL = process.env.REACT_APP_API_URL;

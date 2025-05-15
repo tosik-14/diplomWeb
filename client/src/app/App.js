@@ -5,7 +5,7 @@ import LoginForm from '../pages/auth/LoginForm';
 import HomePage from '../pages/homepages/HomePage';
 import Profile from '../pages/profile/Profile';
 import ProfileSetup from '../pages/profile/ProfileSetup';
-import AdminPanel from "../pages/admin/AdminPanel";
+import AdminPanel from "../pages/admin/ui/AdminPanel";
 
 function App() {
     return (

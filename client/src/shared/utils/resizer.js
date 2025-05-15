@@ -1,4 +1,4 @@
-export const startResize = ({ direction, nodeRef, position, setPosition, size, setSize }) => (e) => {
+export const startResize = ({ direction, nodeRef, position, setPosition, size, setSize, minW, maxW, minH, maxH }) => (e) => {
     e.preventDefault(); // Отключаем стандартное поведение браузера (например, выделение текста при перетаскивании)
     e.stopPropagation(); // Предотвращаем всплытие события выше по дереву DOM
 
@@ -12,11 +12,11 @@ export const startResize = ({ direction, nodeRef, position, setPosition, size, s
 
 
 
-    const minW = 700;// устанавливаем минимальные и максимальные допустимые размеры окна
+    /*const minW = 700;// устанавливаем минимальные и максимальные допустимые размеры окна
     const maxW = 1200;
     const minH = 300;
     const maxH = 1000;
-
+*/
 
 
     const onMouseMove = (e) => {// обработчик движения мыши
