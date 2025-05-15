@@ -11,10 +11,7 @@ export const useTicketCreator = ({
                                      setEmptyInputMessage,
                                      setSeason,
                                  }) => {
-    /*const [dropZoneFiles, setDropZoneFiles] = useState(
-        Array(dropAreasCount).fill([]) // двумерный массив для хранения файлов в случае разных типов вопросов. формат: [ [ файл1, файл2 ], [ ], и т.д. до 5]
-    );  //от dropAreasCount зависит "вторая мерность хз, короче j"*/
-    //const [questionsPerTicket, setQuestionsPerTicket] = useState(2);
+
     const [questionsPerType, setQuestionsPerType] = useState([2]); //количество вопросов в каждом типе
 
     const [fileError, setFileError] = useState(false);  // флаг ошибки
@@ -28,12 +25,6 @@ export const useTicketCreator = ({
             setTimeout(() => setFileError(false), 5000);
             return;
         }
-        /*
-        *
-        * СЮДА ДОБАВИТЬ ОГРАНИЧЕНИЕ НЕ БОЛЕЕ 5 ФАЙЛОВ НА ЗОНУ
-        *
-        *
-        * */
         setDropZoneFiles(prev => { // сразу записываем файл в массив
             const newState = [...prev]; // копируется текущий массив дропзон
             newState[areaIndex] = [...newState[areaIndex], file];// добавляется в массив новый файл в формате { name: 'test.docx' }

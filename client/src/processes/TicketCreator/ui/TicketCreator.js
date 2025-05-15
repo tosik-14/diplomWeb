@@ -23,14 +23,13 @@ const PUBLIC_URL = process.env.PUBLIC_URL;
 
 
 const TicketCreator = ({ user, visible, onClose }) => {
+    const navigate = useNavigate();
+
     const [dropAreasCount, setDropAreasCount] = useState(1); //количество дропзон для разных типов вопросов
     const [dropZoneFiles, setDropZoneFiles] = useState(
         Array(dropAreasCount).fill([]) // двумерный массив для хранения файлов в случае разных типов вопросов. формат: [ [ файл1, файл2 ], [ ], и т.д. до 5]
     );  //от dropAreasCount зависит "вторая мерность хз, короче j"
-    //const [questionsPerTicket, setQuestionsPerTicket] = useState(2);
-   /* const [questionsPerType, setQuestionsPerType] = useState([2]); //количество вопросов в каждом типе*/
 
-    /*const [position, setPosition] = useState({ x: 0, y: 0 });*/
     const [userPosition, setUserPosition] = useState(null); //должность. информация из бд, в будущем ее количество может расти. Например для уника, или факультета и тд
     const [userName, setUserName] = useState(null); // ФИО юзера
 
@@ -49,23 +48,8 @@ const TicketCreator = ({ user, visible, onClose }) => {
     const [isNarrow, setIsNarrow] = useState([]);//тру если дропзона меньше 216пх
     const zoneRefs = useRef([]); //ссылки на дропзоны
 
-
-
-
-   /* const [fileError, setFileError] = useState(false);  // флаг ошибки
-    const [fileErrorMessage, setFileErrorMessage] = useState(''); // текст ошибки, приходит из DropZone*/
-
     const [emptyInput, setEmptyInput] = useState(false);  // флаг ошибки
     const [emptyInputMessage, setEmptyInputMessage] = useState(''); // текст ошибки, приходит из DropZone
-
-/*comment
-*   big comment */
-
-
-    const navigate = useNavigate();
-    //const now = new Date();
-    //const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    //const formattedSeconds = `${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
 
     const [ticketCount, setTicketCount] = useState(30); //количество билетов
     const [ticketsFileName, setTicketsFileName] = useState('Билеты'); // имя файлов с билетами
@@ -91,7 +75,6 @@ const TicketCreator = ({ user, visible, onClose }) => {
     const [approvalYear, setApprovalYear] = useState(year);//год утверждения билетов
 
     const [ticketProtocol, setTicketProtocol] = useState(1);//номер протокола
-    //const isInternalDragging = useRef(false);
     const { handleMouseDown } = useCustomDraggable({ size, position, setPosition });
 
     const { handleCreateTickets } = useCreateTicketSubmit();
@@ -162,7 +145,6 @@ const TicketCreator = ({ user, visible, onClose }) => {
         window.addEventListener('keydown', handleEscape);
         return () => window.removeEventListener('keydown', handleEscape);
     }, [onClose]);
-
 
 
     useEffect(() => { //изменяем массив рефов в зависимости от числа дропзон
